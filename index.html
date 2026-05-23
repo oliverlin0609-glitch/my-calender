@@ -1,1 +1,1377 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f1a">
+<title>我的每日行事曆</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --card: #16213e;
+    --accent: #e94560;
+    --accent2: #0f3460;
+    --gold: #f5a623;
+    --green: #4ecca3;
+    --school: #38b2f5;
+    --text: #eaeaea;
+    --muted: #888aaa;
+    --border: rgba(255,255,255,0.08);
+    --radius: 16px;
+    --glass-bg: rgba(255,255,255,0.10);
+    --glass-border: rgba(255,255,255,0.22);
+    --glass-shadow: 0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.18);
+    --glass-blur: blur(18px) saturate(1.6);
+  }
 
+  /* ── LIQUID GLASS base ── */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 1.2s ease;
+  }
+
+  #bgLayer {
+    position: fixed; inset: 0; z-index: 0;
+    transition: opacity 1.2s ease;
+    background-size: cover; background-position: center;
+    opacity: 0.18; pointer-events: none;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(233,69,96,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(233,69,96,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 480px; margin: 0 auto;
+    padding: 0 0 100px;
+  }
+
+  /* Header */
+  .header { padding: 24px 20px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .app-title {
+    font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;
+  }
+  .date-display { font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; }
+  .date-sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
+  .mood-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted);
+    padding: 3px 8px; border-radius: 20px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    margin-top: 6px; cursor: pointer; transition: all 0.2s;
+  }
+  .mood-badge:active { opacity: 0.7; }
+  .nav-btn {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    color: var(--text);
+    width: 36px; height: 36px; border-radius: 10px; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .nav-btn:active { transform: scale(0.92); background: rgba(255,255,255,0.18); }
+  .today-btn {
+    background: rgba(233,69,96,0.35);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(233,69,96,0.55);
+    box-shadow: 0 4px 18px rgba(233,69,96,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+    color: white;
+    padding: 0 14px; height: 36px; border-radius: 10px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    font-family: 'Space Mono', monospace; letter-spacing: 1px; transition: all 0.2s;
+  }
+  .today-btn:active { transform: scale(0.92); background: rgba(233,69,96,0.5); }
+
+  /* Day tabs */
+  .day-tabs { display: flex; gap: 6px; padding: 0 20px 16px; overflow-x: auto; scrollbar-width: none; }
+  .day-tabs::-webkit-scrollbar { display: none; }
+  .day-tab {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 8px 12px; border-radius: 14px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    cursor: pointer; transition: all 0.2s; min-width: 52px;
+    position: relative;
+  }
+  .day-tab.active {
+    background: rgba(233,69,96,0.32);
+    border-color: rgba(233,69,96,0.6);
+    box-shadow: 0 4px 20px rgba(233,69,96,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .day-tab:active { transform: scale(0.93); }
+  .day-tab.has-school-event::after {
+    content: '🏫';
+    position: absolute; top: -6px; right: -4px;
+    font-size: 12px;
+  }
+  .tab-name { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); letter-spacing: 1px; }
+  .day-tab.active .tab-name { color: rgba(255,255,255,0.8); }
+  .tab-date { font-size: 18px; font-weight: 700; }
+  .tab-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); opacity: 0; }
+  .tab-dot.has-note { opacity: 1; }
+
+  /* Sections */
+  .section { margin: 0 20px 16px; animation: fadeUp 0.35s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .section-label {
+    font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── SCHOOL EVENTS ── */
+  .school-events-card {
+    background: linear-gradient(135deg, #0d1e2e 0%, #0a1929 100%);
+    border: 1px solid rgba(56,178,245,0.35);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .school-event-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(56,178,245,0.1);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .school-event-item:last-child { border-bottom: none; }
+  .school-event-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--school); margin-top: 5px; flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(56,178,245,0.6);
+  }
+  .school-event-body { flex: 1; }
+  .school-event-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .school-event-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .school-event-time {
+    font-size: 10px; font-family: 'Space Mono', monospace;
+    color: var(--school); background: rgba(56,178,245,0.1);
+    padding: 2px 8px; border-radius: 20px; margin-top: 4px; display: inline-block;
+  }
+  .school-events-empty {
+    padding: 20px 16px; text-align: center;
+    font-size: 12px; color: var(--muted); font-style: italic;
+  }
+
+  /* Morning routine */
+  .morning-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(78,204,163,0.2); border-radius: var(--radius);
+    padding: 16px; position: relative; overflow: hidden;
+  }
+  .morning-card::before { content: '☀'; position: absolute; right: 16px; top: 12px; font-size: 32px; opacity: 0.08; }
+  .routine-items { display: flex; flex-direction: column; gap: 8px; }
+  .routine-item { display: flex; align-items: center; gap: 10px; }
+  .routine-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(78,204,163,0.12); display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .routine-text { font-size: 13px; color: var(--text); }
+  .routine-badge {
+    font-size: 10px; background: rgba(78,204,163,0.15); color: var(--green);
+    padding: 2px 7px; border-radius: 20px; font-family: 'Space Mono', monospace;
+    margin-left: auto; flex-shrink: 0;
+  }
+
+  .breakfast-card {
+    background: linear-gradient(135deg, #1a1420 0%, #1e1628 100%);
+    border: 1px solid rgba(245,166,35,0.25); border-radius: var(--radius);
+    padding: 16px; display: flex; gap: 14px; align-items: center;
+    position: relative; overflow: hidden; margin-top: 10px;
+  }
+  .breakfast-emoji { font-size: 36px; flex-shrink: 0; }
+  .breakfast-info { flex: 1; }
+  .breakfast-label { font-size: 9px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: var(--gold); margin-bottom: 4px; }
+  .breakfast-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .breakfast-drink { font-size: 12px; color: var(--muted); }
+  .breakfast-tag {
+    font-size: 9px; background: rgba(245,166,35,0.12); color: var(--gold);
+    padding: 3px 8px; border-radius: 20px; font-family: 'Space Mono', monospace;
+    margin-top: 6px; display: inline-block;
+  }
+  .reroll-btn {
+    background: rgba(245,166,35,0.18);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(245,166,35,0.4);
+    box-shadow: 0 2px 12px rgba(245,166,35,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
+    color: var(--gold);
+    width: 34px; height: 34px; border-radius: 10px; font-size: 18px; cursor: pointer;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .reroll-btn:active { transform: rotate(180deg) scale(0.9); }
+
+  /* Schedule */
+  .schedule-block { display: flex; gap: 12px; margin-bottom: 8px; animation: fadeUp 0.3s ease both; }
+  .time-col { width: 48px; flex-shrink: 0; text-align: right; padding-top: 12px; }
+  .time-text { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); line-height: 1.3; }
+  .class-card {
+    flex: 1; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; border-left: 3px solid var(--accent2); transition: all 0.2s;
+  }
+  .class-card.break-card { background: rgba(255,255,255,0.03); border-left-color: transparent; padding: 8px 14px; }
+  .class-card.special { border-left-color: var(--green); background: linear-gradient(135deg, #16213e, #12293a); }
+  .class-card.lunch { border-left-color: var(--gold); background: linear-gradient(135deg, #1e1a10, #221e12); }
+  .class-card.free { border-left-color: var(--accent); background: linear-gradient(135deg, #1e0f14, #221016); }
+  .pbl-card { border-left-color: #9b5de5 !important; background: linear-gradient(135deg, #16122a, #1a1535) !important; }
+  .class-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .class-meta { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .break-text { font-size: 11px; color: var(--muted); font-style: italic; }
+  .free-badge {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
+    color: var(--accent); background: rgba(233,69,96,0.1); padding: 3px 8px;
+    border-radius: 20px; font-family: 'Space Mono', monospace;
+  }
+
+  /* Notes */
+  .notes-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .notes-header { padding: 12px 16px 8px; display: flex; justify-content: space-between; align-items: center; }
+  .notes-title { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .notes-count { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); }
+  .add-note-btn {
+    background: rgba(233,69,96,0.25);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(233,69,96,0.45);
+    box-shadow: 0 2px 10px rgba(233,69,96,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+    color: white;
+    width: 28px; height: 28px; border-radius: 8px; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s; line-height: 1;
+  }
+  .add-note-btn:active { transform: scale(0.88); }
+  .notes-list { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .note-item {
+    background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .note-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0; }
+  .note-text { font-size: 13px; line-height: 1.5; flex: 1; word-break: break-word; }
+  .note-delete { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; transition: color 0.2s; }
+  .note-delete:hover { color: var(--accent); }
+  .notes-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 4px 0 8px; }
+
+  /* Fact */
+  .fact-card {
+    background: linear-gradient(135deg, #0e1f2e 0%, #122030 100%);
+    border: 1px solid rgba(78,204,163,0.3); border-radius: var(--radius);
+    padding: 16px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.2s;
+  }
+  .fact-card::before { content: '💡'; position: absolute; right: 14px; top: 12px; font-size: 28px; opacity: 0.1; }
+  .fact-label { font-size: 9px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: var(--green); margin-bottom: 8px; text-transform: uppercase; }
+  .fact-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+  .fact-actions { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
+  .fact-link-btn {
+    background: rgba(78,204,163,0.15);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(78,204,163,0.35);
+    box-shadow: 0 2px 10px rgba(78,204,163,0.12), inset 0 1px 0 rgba(255,255,255,0.15);
+    color: var(--green);
+    padding: 6px 12px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+    transition: all 0.2s; flex: 1; justify-content: center;
+  }
+  .fact-refresh-btn {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255,255,255,0.20);
+    box-shadow: var(--glass-shadow);
+    color: var(--muted);
+    width: 32px; height: 32px; border-radius: 10px; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0;
+  }
+  .fact-refresh-btn:active { transform: rotate(360deg); }
+
+  /* Sports */
+  .sports-card {
+    background: linear-gradient(135deg, #1a0f2e 0%, #1e1235 100%);
+    border: 1px solid rgba(155,93,229,0.3); border-radius: var(--radius);
+    padding: 16px; position: relative; overflow: hidden;
+  }
+  .sports-label { font-size: 9px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: #9b5de5; margin-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  .sports-type-pills { display: flex; gap: 6px; margin-bottom: 12px; }
+  .sports-pill {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    color: var(--muted); transition: all 0.2s;
+  }
+  .sports-pill.active {
+    background: rgba(155,93,229,0.28);
+    border-color: rgba(155,93,229,0.55);
+    box-shadow: 0 2px 12px rgba(155,93,229,0.2), inset 0 1px 0 rgba(255,255,255,0.18);
+    color: #9b5de5;
+  }
+  .sports-item {
+    background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 14px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block;
+  }
+  .sports-item:active { transform: scale(0.98); background: rgba(155,93,229,0.1); }
+  .sports-headline { font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--text); }
+  .sports-meta { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 4px; }
+  .sports-refresh-btn {
+    background: rgba(155,93,229,0.18);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(155,93,229,0.38);
+    box-shadow: 0 2px 10px rgba(155,93,229,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
+    color: #9b5de5;
+    width: 28px; height: 28px; border-radius: 8px; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s; margin-left: auto;
+  }
+  .sports-refresh-btn:active { transform: rotate(360deg); }
+
+  /* AI FAB */
+  .ai-fab {
+    position: fixed; bottom: 90px; right: 20px; width: 52px; height: 52px;
+    border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5);
+    border: none; color: white; font-size: 22px; cursor: pointer;
+    z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4);
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+    animation: aiPulse 3s ease infinite;
+  }
+  @keyframes aiPulse { 0%,100%{box-shadow:0 4px 20px rgba(233,69,96,0.4)} 50%{box-shadow:0 4px 30px rgba(155,93,229,0.6)} }
+  .ai-fab:active { transform: scale(0.9); }
+
+  /* AI Panel */
+  .ai-panel {
+    position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column;
+    background: rgba(10,10,20,0.97); backdrop-filter: blur(20px);
+    transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .ai-panel.open { transform: translateY(0); }
+  .ai-header { padding: 20px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .ai-title-block { flex: 1; }
+  .ai-title { font-size: 14px; font-weight: 700; }
+  .ai-subtitle { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .ai-close { background: rgba(255,255,255,0.08); border: none; color: var(--text); width: 32px; height: 32px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .ai-messages { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .ai-msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeUp 0.3s ease both; }
+  .ai-msg.user { flex-direction: row-reverse; }
+  .ai-msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; }
+  .ai-msg.bot .ai-msg-bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .ai-msg.user .ai-msg-bubble { background: linear-gradient(135deg, #e94560, #9b5de5); border-bottom-right-radius: 4px; }
+  .ai-msg-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); }
+  .ai-msg.user .ai-msg-icon { background: linear-gradient(135deg, #e94560, #9b5de5); border: none; }
+  .ai-typing { display: flex; gap: 4px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; border-bottom-left-radius: 4px; width: fit-content; }
+  .ai-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: typingDot 1.4s ease infinite; }
+  .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+  .ai-suggestions { display: flex; gap: 6px; padding: 8px 20px; overflow-x: auto; scrollbar-width: none; }
+  .ai-suggestions::-webkit-scrollbar { display: none; }
+  .ai-suggest-chip {
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255,255,255,0.20);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; color: var(--text);
+  }
+  .ai-suggest-chip:active { background: rgba(233,69,96,0.22); border-color: rgba(233,69,96,0.45); }
+  .ai-input-bar { padding: 12px 20px 32px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-end; }
+  .ai-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; resize: none; min-height: 42px; max-height: 120px; outline: none; transition: border-color 0.2s; }
+  .ai-input:focus { border-color: var(--accent); }
+  .ai-send { background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; width: 42px; height: 42px; border-radius: 12px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .ai-send:active { transform: scale(0.9); }
+
+  /* Note Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: var(--surface); border-radius: 24px 24px 0 0; padding: 20px 20px 40px; width: 100%; border-top: 1px solid var(--border); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 16px; }
+  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .note-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; resize: none; min-height: 100px; outline: none; transition: border-color 0.2s; }
+  .note-input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 12px; }
+  .modal-cancel {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    color: var(--muted); padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
+  }
+  .modal-save {
+    flex: 2;
+    background: rgba(233,69,96,0.35);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(233,69,96,0.55);
+    box-shadow: 0 4px 18px rgba(233,69,96,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+    color: white; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s;
+  }
+  .modal-save:active { transform: scale(0.97); }
+
+  /* ── PARENT ADMIN PANEL ── */
+  .admin-panel {
+    position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column;
+    background: #0a0a16; transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.34,1.1,0.64,1);
+  }
+  .admin-panel.open { transform: translateX(0); }
+  .admin-header {
+    padding: 20px 20px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(135deg, rgba(56,178,245,0.08), transparent);
+  }
+  .admin-icon { font-size: 28px; }
+  .admin-title-block { flex: 1; }
+  .admin-title { font-size: 16px; font-weight: 700; color: var(--school); }
+  .admin-subtitle { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .admin-close { background: rgba(255,255,255,0.08); border: none; color: var(--text); width: 36px; height: 36px; border-radius: 10px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .admin-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .admin-section-title { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--school); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .admin-add-form { background: var(--surface); border: 1px solid rgba(56,178,245,0.25); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; }
+  .form-row { margin-bottom: 12px; }
+  .form-label { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; display: block; }
+  .form-input, .form-textarea, .form-select {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif; outline: none; transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--school); }
+  .form-textarea { resize: none; min-height: 70px; }
+  .form-select { cursor: pointer; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .admin-add-btn {
+    width: 100%; background: linear-gradient(135deg, #38b2f5, #1a7bc4);
+    border: none; color: white; padding: 14px; border-radius: 12px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s; margin-top: 4px;
+  }
+  .admin-add-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .admin-events-list { display: flex; flex-direction: column; gap: 10px; }
+  .admin-event-item {
+    background: var(--surface); border: 1px solid rgba(56,178,245,0.2);
+    border-radius: 12px; padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .admin-event-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--school); margin-top: 5px; flex-shrink: 0; }
+  .admin-event-body { flex: 1; min-width: 0; }
+  .admin-event-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .admin-event-date { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--school); }
+  .admin-event-note { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .admin-event-delete {
+    background: rgba(233,69,96,0.1); border: 1px solid rgba(233,69,96,0.25);
+    color: var(--accent); width: 28px; height: 28px; border-radius: 8px;
+    font-size: 14px; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .admin-event-delete:active { transform: scale(0.88); }
+  .admin-empty { text-align: center; padding: 32px 20px; color: var(--muted); font-size: 13px; }
+  .sync-status {
+    font-size: 11px; font-family: 'Space Mono', monospace; color: var(--green);
+    text-align: center; padding: 8px; opacity: 0; transition: opacity 0.4s;
+  }
+  .sync-status.show { opacity: 1; }
+
+  /* Lock screen */
+  .lock-screen {
+    position: absolute; inset: 0; background: #0a0a16;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px; padding: 40px; z-index: 10;
+  }
+  .lock-icon { font-size: 48px; margin-bottom: 8px; }
+  .lock-title { font-size: 18px; font-weight: 700; color: var(--school); }
+  .lock-sub { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
+  .lock-input {
+    width: 100%; max-width: 280px; background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(56,178,245,0.3); border-radius: 14px;
+    padding: 14px 20px; color: var(--text); font-size: 18px;
+    font-family: 'Space Mono', monospace; outline: none; text-align: center;
+    letter-spacing: 4px; transition: border-color 0.2s;
+  }
+  .lock-input:focus { border-color: var(--school); }
+  .lock-btn {
+    background: linear-gradient(135deg, #38b2f5, #1a7bc4);
+    border: none; color: white; padding: 14px 40px;
+    border-radius: 14px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s;
+  }
+  .lock-btn:active { transform: scale(0.97); }
+  .lock-error { font-size: 13px; color: var(--accent); font-family: 'Space Mono', monospace; }
+  .lock-hint { font-size: 11px; color: rgba(255,255,255,0.2); }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(15,15,26,0.55);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border-top: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.3);
+    display: flex; justify-content: space-around;
+    padding: 10px 0 20px; z-index: 50;
+  }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 16px; border-radius: 12px; transition: all 0.2s; color: var(--muted); font-size: 10px; font-family: 'Space Mono', monospace; }
+  .nav-item.active { color: var(--accent); }
+  .nav-item .nav-icon { font-size: 22px; }
+  .nav-item.school-nav .nav-icon { position: relative; display: inline-block; }
+  .school-badge {
+    position: absolute; top: -4px; right: -6px;
+    background: var(--school); color: white; border-radius: 50%;
+    width: 16px; height: 16px; font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div id="bgLayer"></div>
+
+<div class="wrapper">
+  <div class="header">
+    <div class="app-title">MY DAILY PLANNER</div>
+    <div class="header-top">
+      <div>
+        <div class="date-display" id="mainDate">載入中...</div>
+        <div class="date-sub" id="mainDateSub"></div>
+        <div class="mood-badge" id="moodBadge">🎨 <span id="moodText">今日氛圍</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:4px;">
+        <button class="nav-btn" onclick="changeWeek(-1)">‹</button>
+        <button class="today-btn" onclick="goToday()">TODAY</button>
+        <button class="nav-btn" onclick="changeWeek(1)">›</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-tabs" id="dayTabs"></div>
+  <div id="dayContent"></div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ 新增筆記</div>
+    <textarea class="note-input" id="noteInput" placeholder="輸入你的筆記..." rows="4"></textarea>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">取消</button>
+      <button class="modal-save" onclick="saveNote()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick=""><div class="nav-icon">📅</div>行事曆</div>
+  <div class="nav-item school-nav" onclick="openAdminPanel()">
+    <div class="nav-icon" style="position:relative;">🏫<span class="school-badge" id="schoolBadge" style="display:none">0</span></div>
+    學校活動
+  </div>
+  <div class="nav-item"><div class="nav-icon">⚙️</div>設定</div>
+</div>
+
+<!-- AI FAB -->
+<button class="ai-fab" onclick="openAI()" title="AI助手">🤖</button>
+
+<!-- AI Panel -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-header">
+    <div class="ai-avatar">🤖</div>
+    <div class="ai-title-block">
+      <div class="ai-title">AI 小助手</div>
+      <div class="ai-subtitle">隨時幫你解答 ✨</div>
+    </div>
+    <button class="ai-close" onclick="closeAI()">✕</button>
+  </div>
+  <div class="ai-messages" id="aiMessages"></div>
+  <div class="ai-suggestions" id="aiSuggestions">
+    <div class="ai-suggest-chip" onclick="sendSuggestion('幫我看今天課表')">📚 查看課表</div>
+    <div class="ai-suggest-chip" onclick="sendSuggestion('換一個早餐推薦')">🍱 換早餐</div>
+    <div class="ai-suggest-chip" onclick="sendSuggestion('說一個有趣的冷知識')">💡 說個知識</div>
+    <div class="ai-suggest-chip" onclick="sendSuggestion('今天天氣適合什麼活動？')">☀️ 今日建議</div>
+  </div>
+  <div class="ai-input-bar">
+    <textarea class="ai-input" id="aiInput" placeholder="問我任何事..." rows="1"></textarea>
+    <button class="ai-send" onclick="sendAI()">➤</button>
+  </div>
+</div>
+
+<!-- Parent Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+  <!-- Lock Screen -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-icon">🔐</div>
+    <div class="lock-title">家長專區</div>
+    <div class="lock-sub">請輸入家長密碼<br>才能新增或編輯學校活動</div>
+    <input type="password" class="lock-input" id="lockInput" placeholder="密碼" maxlength="10">
+    <div class="lock-error" id="lockError" style="display:none">密碼錯誤，請再試一次</div>
+    <button class="lock-btn" onclick="checkPassword()">進入</button>
+    <div class="lock-hint">預設密碼：1234（可在下方修改）</div>
+    <button onclick="closeAdminPanel()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;margin-top:8px;">← 返回</button>
+  </div>
+
+  <!-- Admin Content -->
+  <div id="adminContent" style="display:none;flex:1;flex-direction:column;height:100%;">
+    <div class="admin-header">
+      <div class="admin-icon">🏫</div>
+      <div class="admin-title-block">
+        <div class="admin-title">學校活動管理</div>
+        <div class="admin-subtitle">家長專區 · 新增後孩子立即看到</div>
+      </div>
+      <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+    </div>
+
+    <div class="admin-body">
+      <div class="admin-section-title">新增學校活動</div>
+      <div class="admin-add-form">
+        <div class="form-row">
+          <label class="form-label">活動名稱 *</label>
+          <input type="text" class="form-input" id="eventTitle" placeholder="例：科展發表、運動會、親師座談...">
+        </div>
+        <div class="form-row form-row-2">
+          <div>
+            <label class="form-label">日期 *</label>
+            <input type="date" class="form-input" id="eventDate">
+          </div>
+          <div>
+            <label class="form-label">時間（選填）</label>
+            <input type="time" class="form-input" id="eventTime">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">備註（選填）</label>
+          <textarea class="form-textarea" id="eventNote" placeholder="例：請攜帶作品、穿制服、下午1點集合..."></textarea>
+        </div>
+        <div class="sync-status" id="syncStatus">✓ 已儲存！孩子的行事曆已更新</div>
+        <button class="admin-add-btn" onclick="addSchoolEvent()">＋ 新增活動</button>
+      </div>
+
+      <div class="admin-section-title">已排定的學校活動</div>
+      <div class="admin-events-list" id="adminEventsList"></div>
+
+      <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border);">
+        <div class="admin-section-title">更改密碼</div>
+        <div style="display:flex;gap:10px;">
+          <input type="password" class="form-input" id="newPwInput" placeholder="新密碼" style="flex:1">
+          <button onclick="changePassword()" style="background:rgba(56,178,245,0.15);border:1px solid rgba(56,178,245,0.3);color:var(--school);padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer;white-space:nowrap;font-family:'Noto Sans TC',sans-serif;">更改</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const BREAKFASTS = [
+  { emoji: '🥚', name: '茶葉蛋 + 御飯糰（鮭魚）', drink: '無糖豆漿', tag: '高蛋白' },
+  { emoji: '🍙', name: '雞肉沙拉飯糰', drink: '鮮奶（低脂）', tag: '低卡均衡' },
+  { emoji: '🥗', name: '御飯糰（昆布）+ 水煮蛋', drink: '柳橙汁', tag: '低脂清爽' },
+  { emoji: '🧆', name: '地瓜飯糰 + 茶葉蛋', drink: '豆漿', tag: '纖維豐富' },
+  { emoji: '🍳', name: '起司蛋三明治', drink: '鮮奶', tag: '均衡營養' },
+  { emoji: '🌿', name: '燕麥飯糰 + 水煮蛋', drink: '鮮奶（低脂）', tag: '飽足感佳' },
+  { emoji: '🐟', name: '鮭魚飯糰 × 2', drink: '蘋果汁', tag: 'Omega-3' },
+  { emoji: '🥜', name: '御飯糰（鮪魚）+ 茶葉蛋', drink: '豆漿', tag: '高蛋白' },
+  { emoji: '🍠', name: '地瓜 + 水煮蛋', drink: '鮮奶', tag: '暖身飽足' },
+  { emoji: '🌾', name: '全麥三明治（雞肉）', drink: '柳橙汁', tag: '低GI' },
+  { emoji: '🍌', name: '香蕉 + 水煮蛋', drink: '鮮奶', tag: '天然能量' },
+  { emoji: '🧇', name: '鬆餅 + 起司片', drink: '蘋果汁', tag: '美味開心' },
+];
+
+const SCHEDULE = {
+  0: [
+    { time: '08:30', name: '晨光靜心閱讀', type: 'special' },
+    { time: '09:00', name: '國語', type: 'class' },
+    { time: '10:15', name: '課間休息', type: 'break' },
+    { time: '10:45', name: '自然', type: 'class' },
+    { time: '12:00', name: '午餐 & 圍討班會', type: 'lunch' },
+    { time: '14:00', name: '英文', type: 'class' },
+    { time: '15:15', name: '課間休息', type: 'break' },
+    { time: '15:45', name: '社會', type: 'class' },
+  ],
+  1: [
+    { time: '08:30', name: '晨光主題活動', type: 'special' },
+    { time: '09:00', name: '社會', type: 'class' },
+    { time: '10:15', name: '課間休息', type: 'break' },
+    { time: '10:45', name: '電腦', type: 'class' },
+    { time: '12:00', name: '午餐 & 圍討班會', type: 'lunch' },
+    { time: '14:00', name: '體育', type: 'special' },
+    { time: '15:15', name: '課間休息', type: 'break' },
+    { time: '15:45', name: '空堂', type: 'free' },
+  ],
+  2: [
+    { time: '08:30', name: '晨光靜心閱讀', type: 'special' },
+    { time: '09:00', name: '邏輯哲學', type: 'class' },
+    { time: '10:15', name: '課間休息', type: 'break' },
+    { time: '10:45', name: '國語', type: 'class' },
+    { time: '12:00', name: '午餐 & 圍討班會', type: 'lunch' },
+    { time: '14:00', name: 'Unity 的遊戲世界＿初階', type: 'pbl' },
+    { time: '15:15', name: '課間休息', type: 'break' },
+    { time: '15:45', name: '影片創意大師 - 剪輯＆後製', type: 'pbl' },
+  ],
+  3: [
+    { time: '08:30', name: '晨光主題活動', type: 'special' },
+    { time: '09:00', name: '數學', type: 'class' },
+    { time: '10:15', name: '課間休息', type: 'break' },
+    { time: '10:45', name: '英文', type: 'class' },
+    { time: '12:00', name: '午餐 & 圍討班會', type: 'lunch' },
+    { time: '14:00', name: '體育', type: 'special' },
+    { time: '15:15', name: '課間休息', type: 'break' },
+    { time: '15:45', name: '進入 Blender 3D 的創意世界', type: 'pbl' },
+  ],
+  4: [
+    { time: '08:30', name: '自主學習時間', type: 'special' },
+    { time: '09:00', name: '自然', type: 'class' },
+    { time: '10:15', name: '課間休息', type: 'break' },
+    { time: '10:45', name: '數學', type: 'class' },
+    { time: '12:00', name: '午餐 & 打掃', type: 'lunch' },
+    { time: '14:00', name: 'PBL 工作時間', type: 'pbl' },
+  ],
+};
+
+const DAYS_TW = ['日','一','二','三','四','五','六'];
+const DAYS_EN = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+const DAY_MOODS = {
+  0: { label: '🌞 週一，充電出發！', gradient: 'linear-gradient(135deg,#1a3a2a,#0d1f1a)' },
+  1: { label: '🔥 週二，全力衝！', gradient: 'linear-gradient(135deg,#2a1a1a,#1f0d0d)' },
+  2: { label: '⚡ 週三，闖關日！', gradient: 'linear-gradient(135deg,#1a1a2e,#0d0d20)' },
+  3: { label: '🌊 週四，穩住節奏', gradient: 'linear-gradient(135deg,#0d1f2a,#091520)' },
+  4: { label: '🎉 週五，衝啊收工！', gradient: 'linear-gradient(135deg,#2a1f0d,#1f1508)' },
+  5: { label: '🌈 週六，享受自由', gradient: 'linear-gradient(135deg,#1a2a1a,#0d1f0d)' },
+  6: { label: '😴 週日，充電中...', gradient: 'linear-gradient(135deg,#1a1a2e,#111128)' },
+};
+
+const FALLBACK_FACTS = [
+  { text: '章魚有三個心臟，兩個負責把血液送到鰓，一個負責全身循環。', keyword: '章魚' },
+  { text: '蜂鳥是世界上唯一能夠向後飛行的鳥類，翅膀每秒可以拍打80次！', keyword: '蜂鳥' },
+  { text: '香蕉其實是一種漿果，而草莓在植物學上並不是漿果。', keyword: '香蕉漿果' },
+  { text: '北極熊的毛其實是透明的，看起來白色是因為光線反射的關係。', keyword: '北極熊' },
+  { text: '人類的眼睛可以分辨大約一千萬種顏色。', keyword: '人眼顏色' },
+  { text: '大象是唯一不能跳躍的哺乳動物。', keyword: '大象' },
+  { text: '一隻蝸牛可以睡上三年！', keyword: '蝸牛睡眠' },
+  { text: '海豚睡覺時一次只讓大腦的一半休息，另一半保持清醒。', keyword: '海豚睡眠' },
+  { text: '彩虹其實是完整的圓形，我們通常只能看到一半是因為地面擋住了。', keyword: '彩虹圓形' },
+  { text: '火烈鳥是粉紅色的原因是牠們吃的藻類和蝦子裡含有的色素。', keyword: '火烈鳥粉紅' },
+];
+
+const SPORTS_NEWS = {
+  soccer: [
+    { title: '梅西帶領邁阿密國際踢出驚人逆轉勝，全場助攻兩球', source: 'ESPN', url: 'https://www.espn.com/soccer/' },
+    { title: '2026 世界盃資格賽最新戰況：亞洲區積分榜大洗牌', source: 'FIFA', url: 'https://www.fifa.com/worldcup/' },
+    { title: '曼城 vs 利物浦：英超大戰精彩回顧', source: 'BBC Sport', url: 'https://www.bbc.com/sport/football' },
+    { title: '巴薩青訓神童創歷史，成為最年輕破門球員', source: 'Goal.com', url: 'https://www.goal.com/' },
+    { title: 'C羅沙烏地聯賽表現亮眼，本季已攻入30球', source: 'Marca', url: 'https://www.marca.com/en/' },
+  ],
+  basketball: [
+    { title: 'NBA 季後賽精彩戰況：騎士隊超時加賽驚天逆轉', source: 'NBA.com', url: 'https://www.nba.com/' },
+    { title: 'Curry 三分球新紀錄！金州勇士大敗湖人', source: 'ESPN', url: 'https://www.espn.com/nba/' },
+    { title: 'LeBron James 宣布持續出賽，拒絕退休傳言', source: 'The Athletic', url: 'https://theathletic.com/nba/' },
+    { title: '台灣 PLG 超級籃球聯賽精彩賽事一週回顧', source: 'PLG', url: 'https://plg.basketball/' },
+  ],
+  baseball: [
+    { title: '大谷翔平再創記錄！本季第35轟震驚全場', source: 'MLB.com', url: 'https://www.mlb.com/' },
+    { title: '中職統一獅奪走客場三連勝，稱霸積分榜', source: 'CPBL', url: 'https://www.cpbl.com.tw/' },
+    { title: '洛杉磯道奇隊連勝10場，鞏固分區龍頭地位', source: 'ESPN', url: 'https://www.espn.com/mlb/' },
+  ],
+};
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let today = new Date(); today.setHours(0,0,0,0);
+let selectedDate = new Date(today);
+let weekOffset = 0;
+let notes = JSON.parse(localStorage.getItem('cal_notes') || '{}');
+let breakfastCache = JSON.parse(localStorage.getItem('cal_bf') || '{}');
+let schoolEvents = JSON.parse(localStorage.getItem('cal_school_events') || '[]');
+let currentSportsType = 'soccer';
+let sportsCache = {};
+let dailyFactIdx = null;
+let aiHistory = [];
+let adminUnlocked = false;
+
+// ═══════════════════════════════════════════════════════
+// SCHOOL EVENTS (stored in localStorage — shared by saving the file)
+// ═══════════════════════════════════════════════════════
+function saveSchoolEvents() {
+  localStorage.setItem('cal_school_events', JSON.stringify(schoolEvents));
+  updateSchoolBadge();
+}
+
+function getEventsForDate(dateStr) {
+  return schoolEvents.filter(e => e.date === dateStr);
+}
+
+function updateSchoolBadge() {
+  const upcoming = schoolEvents.filter(e => e.date >= dateKey(today));
+  const badge = document.getElementById('schoolBadge');
+  if (upcoming.length > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = upcoming.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function addSchoolEvent() {
+  const title = document.getElementById('eventTitle').value.trim();
+  const date = document.getElementById('eventDate').value;
+  const time = document.getElementById('eventTime').value;
+  const note = document.getElementById('eventNote').value.trim();
+
+  if (!title || !date) {
+    document.getElementById('eventTitle').style.borderColor = 'var(--accent)';
+    setTimeout(() => document.getElementById('eventTitle').style.borderColor = '', 1500);
+    return;
+  }
+
+  const event = { id: Date.now(), title, date, time, note };
+  schoolEvents.push(event);
+  schoolEvents.sort((a, b) => a.date.localeCompare(b.date));
+  saveSchoolEvents();
+
+  // Clear form
+  document.getElementById('eventTitle').value = '';
+  document.getElementById('eventDate').value = '';
+  document.getElementById('eventTime').value = '';
+  document.getElementById('eventNote').value = '';
+
+  const status = document.getElementById('syncStatus');
+  status.classList.add('show');
+  setTimeout(() => status.classList.remove('show'), 3000);
+
+  renderAdminEvents();
+  render(); // refresh calendar
+}
+
+function deleteSchoolEvent(id) {
+  schoolEvents = schoolEvents.filter(e => e.id !== id);
+  saveSchoolEvents();
+  renderAdminEvents();
+  render();
+}
+
+function renderAdminEvents() {
+  const list = document.getElementById('adminEventsList');
+  if (schoolEvents.length === 0) {
+    list.innerHTML = '<div class="admin-empty">還沒有學校活動<br>在上方新增第一個吧！</div>';
+    return;
+  }
+  list.innerHTML = schoolEvents.map(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    const dateStr = `${d.getMonth()+1}月${d.getDate()}日 (週${DAYS_TW[d.getDay()]})`;
+    return `
+    <div class="admin-event-item">
+      <div class="admin-event-dot"></div>
+      <div class="admin-event-body">
+        <div class="admin-event-title">${escHtml(e.title)}</div>
+        <div class="admin-event-date">${dateStr}${e.time ? ' · ' + e.time : ''}</div>
+        ${e.note ? `<div class="admin-event-note">${escHtml(e.note)}</div>` : ''}
+      </div>
+      <button class="admin-event-delete" onclick="deleteSchoolEvent(${e.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════════
+const ADMIN_PW_KEY = 'cal_admin_pw';
+
+function getAdminPassword() {
+  return localStorage.getItem(ADMIN_PW_KEY) || '1234';
+}
+
+function openAdminPanel() {
+  document.getElementById('adminPanel').classList.add('open');
+  if (adminUnlocked) showAdminContent();
+  else showLockScreen();
+}
+
+function closeAdminPanel() {
+  document.getElementById('adminPanel').classList.remove('open');
+}
+
+function showLockScreen() {
+  document.getElementById('lockScreen').style.display = 'flex';
+  document.getElementById('adminContent').style.display = 'none';
+  document.getElementById('lockInput').value = '';
+  document.getElementById('lockError').style.display = 'none';
+}
+
+function showAdminContent() {
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('adminContent').style.display = 'flex';
+  // Set today as default date
+  const today_str = dateKey(today);
+  if (!document.getElementById('eventDate').value) {
+    document.getElementById('eventDate').value = today_str;
+  }
+  renderAdminEvents();
+}
+
+function checkPassword() {
+  const input = document.getElementById('lockInput').value;
+  if (input === getAdminPassword()) {
+    adminUnlocked = true;
+    document.getElementById('lockError').style.display = 'none';
+    showAdminContent();
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockInput').focus();
+  }
+}
+
+function changePassword() {
+  const newPw = document.getElementById('newPwInput').value.trim();
+  if (!newPw) return;
+  localStorage.setItem(ADMIN_PW_KEY, newPw);
+  document.getElementById('newPwInput').value = '';
+  alert('密碼已更改！');
+}
+
+document.getElementById('lockInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+
+// ═══════════════════════════════════════════════════════
+// BACKGROUND
+// ═══════════════════════════════════════════════════════
+function applyBackground(dayOfWeek) {
+  const mood = DAY_MOODS[dayOfWeek];
+  document.body.style.background = mood.gradient;
+  document.getElementById('moodText').textContent = mood.label;
+}
+
+// ═══════════════════════════════════════════════════════
+// BREAKFAST
+// ═══════════════════════════════════════════════════════
+function getBreakfast(dk, forceRandom = false) {
+  if (!forceRandom && breakfastCache[dk] !== undefined) return breakfastCache[dk];
+  let seed = dk.split('-').reduce((a, b) => a * 31 + parseInt(b), 0);
+  if (forceRandom) seed = Math.floor(Math.random() * 99999);
+  const idx = ((seed % BREAKFASTS.length) + BREAKFASTS.length) % BREAKFASTS.length;
+  breakfastCache[dk] = idx;
+  localStorage.setItem('cal_bf', JSON.stringify(breakfastCache));
+  return idx;
+}
+function rerollBreakfast(dk) { getBreakfast(dk, true); renderDayContent(); }
+
+// ═══════════════════════════════════════════════════════
+// FACTS
+// ═══════════════════════════════════════════════════════
+function getDailyFactIdx(dk) {
+  // 每次開啟 app 都重新抽（存當天的「開啟時間戳」，不同天就換新的）
+  const sessionKey = 'cal_fact_session';
+  const session = JSON.parse(localStorage.getItem(sessionKey) || '{}');
+
+  // 如果今天已經抽過而且還沒換天，直接用
+  if (session.date === dk && session.idx !== undefined && dailyFactIdx !== null) {
+    return dailyFactIdx;
+  }
+
+  // 每次開啟 app（dailyFactIdx 是 null）就重新隨機抽一個
+  if (dailyFactIdx === null) {
+    dailyFactIdx = Math.floor(Math.random() * FALLBACK_FACTS.length);
+    localStorage.setItem(sessionKey, JSON.stringify({ date: dk, idx: dailyFactIdx }));
+  }
+  return dailyFactIdx;
+}
+function refreshFact(dk) {
+  dailyFactIdx = Math.floor(Math.random() * FALLBACK_FACTS.length);
+  localStorage.setItem('cal_fact_session', JSON.stringify({ date: dk, idx: dailyFactIdx }));
+  renderDayContent();
+}
+
+// ═══════════════════════════════════════════════════════
+// SPORTS
+// ═══════════════════════════════════════════════════════
+function getSportsNews(type, dk) {
+  const key = `${type}_${dk}`;
+  if (sportsCache[key]) return sportsCache[key];
+  const pool = SPORTS_NEWS[type];
+  const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
+  sportsCache[key] = shuffled;
+  return shuffled;
+}
+function refreshSports(dk) { const key = `${currentSportsType}_${dk}`; delete sportsCache[key]; renderDayContent(); }
+function switchSportsType(type) { currentSportsType = type; renderDayContent(); }
+
+// ═══════════════════════════════════════════════════════
+// DATE UTILS
+// ═══════════════════════════════════════════════════════
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function getMondayOfWeek(d) {
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const monday = new Date(d); monday.setDate(d.getDate() + diff); monday.setHours(0,0,0,0);
+  return monday;
+}
+function getWeekDates(weekMon) {
+  return Array.from({length: 7}, (_, i) => { const d = new Date(weekMon); d.setDate(weekMon.getDate() + i); return d; });
+}
+function getWeekNum(d) {
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+}
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function render() {
+  const baseMon = getMondayOfWeek(today);
+  baseMon.setDate(baseMon.getDate() + weekOffset * 7);
+  const weekDates = getWeekDates(baseMon);
+  const dk = dateKey(selectedDate);
+
+  document.getElementById('mainDate').textContent =
+    `${selectedDate.getMonth()+1}月${selectedDate.getDate()}日 (${DAYS_TW[selectedDate.getDay()]})`;
+  document.getElementById('mainDateSub').textContent =
+    selectedDate.getFullYear() + ' · 第' + getWeekNum(selectedDate) + '週';
+
+  applyBackground(selectedDate.getDay());
+
+  const tabs = document.getElementById('dayTabs');
+  tabs.innerHTML = '';
+  weekDates.slice(1, 6).forEach(d => {
+    const k = dateKey(d);
+    const isActive = k === dk;
+    const hasNote = notes[k] && notes[k].length > 0;
+    const isToday = k === dateKey(today);
+    const dayEvents = getEventsForDate(k);
+    const tab = document.createElement('div');
+    tab.className = 'day-tab' + (isActive ? ' active' : '') + (dayEvents.length > 0 ? ' has-school-event' : '');
+    tab.innerHTML = `
+      <div class="tab-name">${DAYS_EN[d.getDay()]}</div>
+      <div class="tab-date" style="${isToday && !isActive ? 'color:var(--accent)' : ''}">${d.getDate()}</div>
+      <div class="tab-dot${hasNote ? ' has-note' : ''}"></div>
+    `;
+    tab.onclick = () => { selectedDate = new Date(d); render(); };
+    tabs.appendChild(tab);
+  });
+
+  renderDayContent();
+  updateSchoolBadge();
+}
+
+function renderDayContent() {
+  const dk = dateKey(selectedDate);
+  const dayOfWeek = selectedDate.getDay();
+  const content = document.getElementById('dayContent');
+  const scheduleIdx = dayOfWeek >= 1 && dayOfWeek <= 5 ? dayOfWeek - 1 : null;
+  const bf = BREAKFASTS[getBreakfast(dk)];
+  const dayNotes = notes[dk] || [];
+  const fact = FALLBACK_FACTS[getDailyFactIdx(dk)];
+  const sportsItems = getSportsNews(currentSportsType, dk);
+  const dayEvents = getEventsForDate(dk);
+
+  let html = '';
+
+  // ── School Events (if any for this day) ──
+  if (dayEvents.length > 0) {
+    html += `<div class="section">
+      <div class="section-label">🏫 學校活動</div>
+      <div class="school-events-card">`;
+    dayEvents.forEach(e => {
+      html += `<div class="school-event-item">
+        <div class="school-event-dot"></div>
+        <div class="school-event-body">
+          <div class="school-event-title">${escHtml(e.title)}</div>
+          ${e.note ? `<div class="school-event-note">${escHtml(e.note)}</div>` : ''}
+          ${e.time ? `<div class="school-event-time">⏰ ${e.time}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // ── Morning Routine ──
+  html += `
+  <div class="section">
+    <div class="section-label">晨間例行公事</div>
+    <div class="morning-card">
+      <div class="routine-items">
+        <div class="routine-item"><div class="routine-icon">🌅</div><div class="routine-text">起床、換衣服</div><div class="routine-badge">起床</div></div>
+        <div class="routine-item"><div class="routine-icon">💪</div><div class="routine-text">伏地挺身 5 下</div><div class="routine-badge">×5</div></div>
+        <div class="routine-item"><div class="routine-icon">🦵</div><div class="routine-text">仰臥起坐 5 下</div><div class="routine-badge">×5</div></div>
+        <div class="routine-item"><div class="routine-icon">🤸</div><div class="routine-text">開合跳 100 下</div><div class="routine-badge">×100</div></div>
+        <div class="routine-item"><div class="routine-icon">🏪</div><div class="routine-text">去全家買早餐</div><div class="routine-badge">早餐</div></div>
+      </div>
+      <div class="breakfast-card">
+        <div class="breakfast-emoji">${bf.emoji}</div>
+        <div class="breakfast-info">
+          <div class="breakfast-label">TODAY'S BREAKFAST</div>
+          <div class="breakfast-name">${bf.name}</div>
+          <div class="breakfast-drink">🥛 ${bf.drink}</div>
+          <div class="breakfast-tag">${bf.tag}</div>
+        </div>
+        <button class="reroll-btn" onclick="rerollBreakfast('${dk}')">🔀</button>
+      </div>
+    </div>
+  </div>`;
+
+  // ── Schedule ──
+  if (scheduleIdx !== null) {
+    html += `<div class="section"><div class="section-label">今日課表</div>`;
+    SCHEDULE[scheduleIdx].forEach((slot, i) => {
+      let cardClass = 'class-card';
+      let icon = '';
+      if (slot.type === 'break') cardClass += ' break-card';
+      if (slot.type === 'special') { cardClass += ' special'; icon = '⭐ '; }
+      if (slot.type === 'lunch') { cardClass += ' lunch'; icon = '🍱 '; }
+      if (slot.type === 'pbl') { cardClass += ' pbl-card'; icon = '🚀 '; }
+      if (slot.type === 'free') cardClass += ' free';
+      const slots = SCHEDULE[scheduleIdx];
+      const endTime = i + 1 < slots.length ? slots[i+1].time : '17:00';
+
+      if (slot.type === 'break') {
+        html += `<div class="schedule-block"><div class="time-col"><div class="time-text">${slot.time}</div></div><div class="${cardClass}"><div class="break-text">— ${slot.name} —</div></div></div>`;
+      } else if (slot.type === 'free') {
+        html += `<div class="schedule-block"><div class="time-col"><div class="time-text">${slot.time}<br>${endTime}</div></div><div class="${cardClass}"><div class="class-name"><span class="free-badge">✨ 空堂</span></div><div class="class-meta" style="margin-top:4px">自由時間，做你想做的事！</div></div></div>`;
+      } else {
+        html += `<div class="schedule-block"><div class="time-col"><div class="time-text">${slot.time}<br>${endTime}</div></div><div class="${cardClass}"><div class="class-name">${icon}${slot.name}</div><div class="class-meta">${slot.time} – ${endTime}</div></div></div>`;
+      }
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="section"><div class="section-label">今日</div>
+      <div class="class-card free" style="border-radius:var(--radius);padding:20px 16px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:8px;">🎉</div>
+        <div class="class-name">週末！</div>
+        <div class="class-meta" style="margin-top:4px">沒有課，好好休息放鬆吧</div>
+      </div></div>`;
+  }
+
+  // ── Fact ──
+  html += `<div class="section"><div class="section-label">今日冷知識</div>
+    <div class="fact-card">
+      <div class="fact-label">💡 DID YOU KNOW?</div>
+      <div class="fact-text">${fact.text}</div>
+      <div class="fact-actions">
+        <a href="https://www.google.com/search?q=${encodeURIComponent(fact.keyword+'有趣知識')}" target="_blank" class="fact-link-btn">🔍 了解更多</a>
+        <button class="fact-refresh-btn" onclick="refreshFact('${dk}')">🔀</button>
+      </div>
+    </div></div>`;
+
+  // ── Sports ──
+  html += `<div class="section"><div class="section-label">體育新聞</div>
+    <div class="sports-card">
+      <div class="sports-label" style="justify-content:space-between;"><span>🏆 TODAY IN SPORTS</span><button class="sports-refresh-btn" onclick="refreshSports('${dk}')">🔀</button></div>
+      <div class="sports-type-pills">
+        <div class="sports-pill ${currentSportsType==='soccer'?'active':''}" onclick="switchSportsType('soccer')">⚽ 足球</div>
+        <div class="sports-pill ${currentSportsType==='basketball'?'active':''}" onclick="switchSportsType('basketball')">🏀 籃球</div>
+        <div class="sports-pill ${currentSportsType==='baseball'?'active':''}" onclick="switchSportsType('baseball')">⚾ 棒球</div>
+      </div>`;
+  sportsItems.forEach(item => {
+    html += `<a href="${item.url}" target="_blank" class="sports-item"><div class="sports-headline">${item.title}</div><div class="sports-meta">${item.source} · 點擊查看更多 ↗</div></a>`;
+  });
+  html += `</div></div>`;
+
+  // ── Notes ──
+  html += `<div class="section"><div class="section-label">筆記</div>
+    <div class="notes-card">
+      <div class="notes-header">
+        <div class="notes-title">📌 今日備註</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="notes-count">${dayNotes.length} 則</span>
+          <button class="add-note-btn" onclick="openModal('${dk}')">+</button>
+        </div>
+      </div>
+      <div class="notes-list">`;
+  if (dayNotes.length === 0) {
+    html += `<div class="notes-empty">還沒有筆記，點 + 新增一則吧</div>`;
+  } else {
+    dayNotes.forEach((note, idx) => {
+      html += `<div class="note-item"><div class="note-dot"></div><div class="note-text">${escHtml(note)}</div><button class="note-delete" onclick="deleteNote('${dk}',${idx})">×</button></div>`;
+    });
+  }
+  html += `</div></div></div>`;
+
+  content.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function changeWeek(dir) {
+  weekOffset += dir;
+  const baseMon = getMondayOfWeek(today);
+  baseMon.setDate(baseMon.getDate() + weekOffset * 7);
+  selectedDate = new Date(baseMon);
+  if (selectedDate.getDay() === 0) selectedDate.setDate(selectedDate.getDate() + 1);
+  render();
+}
+function goToday() {
+  weekOffset = 0; selectedDate = new Date(today);
+  if (selectedDate.getDay() === 0) selectedDate.setDate(selectedDate.getDate() + 1);
+  if (selectedDate.getDay() === 6) selectedDate.setDate(selectedDate.getDate() + 2);
+  render();
+}
+
+// ═══════════════════════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════════════════════
+let currentNoteDay = null;
+function openModal(dk) {
+  currentNoteDay = dk;
+  document.getElementById('noteInput').value = '';
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('noteInput').focus(), 350);
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); currentNoteDay = null; }
+function saveNote() {
+  const val = document.getElementById('noteInput').value.trim();
+  if (!val) return;
+  if (!notes[currentNoteDay]) notes[currentNoteDay] = [];
+  notes[currentNoteDay].push(val);
+  localStorage.setItem('cal_notes', JSON.stringify(notes));
+  closeModal(); render();
+}
+function deleteNote(dk, idx) {
+  notes[dk].splice(idx, 1);
+  localStorage.setItem('cal_notes', JSON.stringify(notes));
+  render();
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.getElementById('noteInput').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveNote(); } });
+
+// ═══════════════════════════════════════════════════════
+// AI ASSISTANT
+// ═══════════════════════════════════════════════════════
+function openAI() {
+  document.getElementById('aiPanel').classList.add('open');
+  if (aiHistory.length === 0) addAIMessage('bot', '你好！我是你的 AI 小助手 🤖\n\n我可以幫你：\n• 📚 查看今日課表\n• 🍱 換早餐推薦\n• 💡 說有趣知識\n• 💬 回答任何問題\n\n有什麼需要嗎？');
+}
+function closeAI() { document.getElementById('aiPanel').classList.remove('open'); }
+function addAIMessage(role, text) {
+  const container = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = `ai-msg ${role}`;
+  div.innerHTML = `<div class="ai-msg-icon">${role === 'bot' ? '🤖' : '😊'}</div><div class="ai-msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  if (role === 'user') aiHistory.push({ role: 'user', content: text });
+  else aiHistory.push({ role: 'assistant', content: text });
+}
+function showTyping() {
+  const container = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'ai-msg bot'; div.id = 'aiTyping';
+  div.innerHTML = `<div class="ai-msg-icon">🤖</div><div class="ai-typing"><span></span><span></span><span></span></div>`;
+  container.appendChild(div); container.scrollTop = container.scrollHeight;
+}
+function removeTyping() { const el = document.getElementById('aiTyping'); if (el) el.remove(); }
+function sendSuggestion(text) { document.getElementById('aiInput').value = text; sendAI(); }
+
+async function sendAI() {
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  addAIMessage('user', text);
+  showTyping();
+
+  const lower = text.toLowerCase();
+  const dk = dateKey(selectedDate);
+  const dow = selectedDate.getDay();
+
+  await new Promise(r => setTimeout(r, 400 + Math.random() * 300));
+  removeTyping();
+
+  if (lower.includes('課表') || lower.includes('今天課')) {
+    const si = dow >= 1 && dow <= 5 ? dow - 1 : null;
+    if (si === null) { addAIMessage('bot', '今天是週末，沒有課喔！好好玩吧 🎉'); return; }
+    const slots = SCHEDULE[si].filter(s => s.type !== 'break');
+    let reply = `📚 今天（週${DAYS_TW[dow]}）的課表：\n\n`;
+    slots.forEach(s => { const icon = s.type==='special'?'⭐':s.type==='lunch'?'🍱':s.type==='pbl'?'🚀':s.type==='free'?'✨':'📖'; reply += `${icon} ${s.time} ${s.name}\n`; });
+    addAIMessage('bot', reply); return;
+  }
+  if (lower.includes('換早餐') || lower.includes('換一個早餐')) {
+    rerollBreakfast(dk);
+    const bf = BREAKFASTS[getBreakfast(dk)];
+    addAIMessage('bot', `好的！已幫你換成：\n\n${bf.emoji} ${bf.name}\n🥛 ${bf.drink}\n標籤：${bf.tag}`); return;
+  }
+  if (lower.includes('知識') || lower.includes('冷知識')) {
+    const f = FALLBACK_FACTS[Math.floor(Math.random() * FALLBACK_FACTS.length)];
+    addAIMessage('bot', `💡 有趣知識：\n\n${f.text}`); return;
+  }
+  if (lower.includes('學校') || lower.includes('活動') || lower.includes('發表') || lower.includes('運動會')) {
+    const events = schoolEvents.filter(e => e.date >= dateKey(today)).slice(0, 5);
+    if (events.length === 0) { addAIMessage('bot', '目前還沒有即將到來的學校活動喔！\n\n爸媽可以從「學校活動」分頁新增。'); return; }
+    let reply = '📅 即將到來的學校活動：\n\n';
+    events.forEach(e => { const d = new Date(e.date+'T00:00:00'); reply += `🏫 ${d.getMonth()+1}/${d.getDate()} ${e.title}${e.time?' ('+e.time+')':''}\n`; });
+    addAIMessage('bot', reply); return;
+  }
+  const msgs = ['加油|我好累|不想|難過','笑話|好笑'];
+  const encouragements = ['你已經很棒了！每一天都在進步 🌟','休息一下也是充電的一部分 ⚡','相信自己！你一定可以的 💪','今天辛苦了，明天會更好 🌈'];
+  const jokes = ['為什麼數學書很難過？因為裡面有太多問題了！😂','為什麼鉛筆是最勇敢的文具？因為它總是第一個上場！✏️','為什麼魚不會用電腦？因為怕被網住了！🐟'];
+  if (/加油|我好累|不想|難過/.test(lower)) { addAIMessage('bot', encouragements[Math.floor(Math.random()*encouragements.length)]); return; }
+  if (/笑話|好笑/.test(lower)) { addAIMessage('bot', jokes[Math.floor(Math.random()*jokes.length)]); return; }
+
+  const encodedMsg = encodeURIComponent(`（我在用每日行事曆App）${text}`);
+  addAIMessage('bot', '這個問題很好！讓我帶你去 Claude 完整回答：');
+  setTimeout(() => {
+    const container = document.getElementById('aiMessages');
+    const div = document.createElement('div');
+    div.className = 'ai-msg bot';
+    div.innerHTML = `<div class="ai-msg-icon">🤖</div><a href="https://claude.ai/new?q=${encodedMsg}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e94560,#9b5de5);color:white;text-decoration:none;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;font-family:'Space Mono',monospace;">🌐 用 Claude 繼續問 →</a>`;
+    container.appendChild(div); container.scrollTop = container.scrollHeight;
+  }, 300);
+}
+document.getElementById('aiInput').addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight,120)+'px'; });
+document.getElementById('aiInput').addEventListener('keydown', function(e) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();} });
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+if (selectedDate.getDay() === 0) selectedDate.setDate(selectedDate.getDate() + 1);
+if (selectedDate.getDay() === 6) selectedDate.setDate(selectedDate.getDate() + 2);
+render();
+</script>
+</body>
+</html>
