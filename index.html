@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" type="image/png" href="icon.png">
+<meta name="theme-color" content="#0f0f1a">
 <title>我的每日行事曆</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -258,7 +257,19 @@
 </style>
 </head>
 <body>
-<div id="bgLayer"></div>
+<!-- 密碼鎖畫面 -->
+<div id="lockScreen" style="position:fixed;inset:0;z-index:9999;background:#0f0f1a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px;">
+  <div style="font-size:56px;">🚀</div>
+  <div style="font-size:22px;font-weight:700;color:#eaeaea;font-family:'Noto Sans TC',sans-serif;">我的每日行事曆</div>
+  <div style="font-size:13px;color:#888aaa;font-family:'Space Mono',monospace;">輸入密碼才能進入</div>
+  <input type="password" id="appLockInput" maxlength="10" placeholder="••••"
+    style="width:200px;background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.15);border-radius:14px;padding:14px 20px;color:#eaeaea;font-size:24px;font-family:'Space Mono',monospace;outline:none;text-align:center;letter-spacing:6px;">
+  <div id="appLockError" style="font-size:12px;color:#e94560;font-family:'Space Mono',monospace;display:none;">密碼錯誤，請再試一次</div>
+  <button onclick="checkAppPassword()"
+    style="background:rgba(233,69,96,0.35);border:1px solid rgba(233,69,96,0.55);color:white;padding:13px 40px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;">
+    進入
+  </button>
+</div>
 <div class="wrapper">
   <div class="header">
     <div class="app-title">MY DAILY PLANNER</div>
@@ -1038,6 +1049,25 @@ function applyBgImage(url) {
 }
 const savedBg = localStorage.getItem('cal_bg_image');
 if (savedBg) applyBgImage(savedBg);
+
+// ═══ 密碼鎖 ═══
+function checkAppPassword() {
+  const input = document.getElementById('appLockInput').value;
+  if (input === '1688') {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('appLockInput').value = '';
+  } else {
+    document.getElementById('appLockError').style.display = 'block';
+    document.getElementById('appLockInput').value = '';
+    document.getElementById('appLockInput').focus();
+    setTimeout(() => document.getElementById('appLockError').style.display = 'none', 2000);
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('appLockInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkAppPassword();
+  });
+});
 
 // ═══ INIT ═══
 if(selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
