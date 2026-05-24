@@ -151,7 +151,19 @@
   .sports-refresh-btn:active { transform: rotate(360deg); }
 
   /* AI FAB */
-  .ai-fab { position: fixed; bottom: 90px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; font-size: 22px; cursor: pointer; z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.3s; animation: aiPulse 3s ease infinite; }
+  .meal-fab {
+    position: fixed; bottom: 210px; right: 20px;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(78,204,163,0.2);
+    backdrop-filter: blur(18px) saturate(1.6);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    border: 1px solid rgba(78,204,163,0.4);
+    box-shadow: 0 4px 20px rgba(78,204,163,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+    color: white; font-size: 20px; cursor: pointer;
+    z-index: 60; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .meal-fab:active { transform: scale(0.9); } width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; font-size: 22px; cursor: pointer; z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.3s; animation: aiPulse 3s ease infinite; }
   @keyframes aiPulse { 0%,100%{box-shadow:0 4px 20px rgba(233,69,96,0.4)} 50%{box-shadow:0 4px 30px rgba(155,93,229,0.6)} }
 
   /* AI Panel */
@@ -336,7 +348,9 @@
 </div>
 
 <!-- AI FAB -->
-<button class="ai-fab" onclick="openAI()">🤖</button>
+<!-- 拍照按鈕 -->
+<button class="meal-fab" onclick="document.getElementById('mealCameraInput').click()" title="拍攝餐點">🍽️</button>
+<input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleMealPhoto(event)">
 
 <!-- AI Panel -->
 <div class="ai-panel" id="aiPanel">
@@ -993,7 +1007,17 @@ async function sendAI() {
 document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
 document.getElementById('aiInput').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();}});
 
-// ═══ INIT ═══
+// ═══ 餐點拍照 ═══
+function handleMealPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const foodName = prompt('📷 照片已拍好！\n\n請輸入食物名稱（讓我幫你搜尋）：');
+  if (foodName && foodName.trim()) {
+    const query = encodeURIComponent(foodName.trim() + ' 營養成分 熱量');
+    window.open(`https://www.google.com/search?q=${query}`, '_blank');
+  }
+  event.target.value = '';
+}
 if(selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
 if(selectedDate.getDay()===6) selectedDate.setDate(selectedDate.getDate()+2);
 render();
