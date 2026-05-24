@@ -147,7 +147,20 @@
   .sports-refresh-btn:active { transform: rotate(360deg); }
 
   /* AI FAB */
-  .ai-fab { position: fixed; bottom: 90px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; font-size: 22px; cursor: pointer; z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.3s; animation: aiPulse 3s ease infinite; }
+  /* 背景上傳按鈕 */
+  .bg-fab {
+    position: fixed; bottom: 150px; right: 20px;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(18px) saturate(1.6);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+    color: white; font-size: 20px; cursor: pointer;
+    z-index: 60; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .bg-fab:active { transform: scale(0.9); } width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; font-size: 22px; cursor: pointer; z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.3s; animation: aiPulse 3s ease infinite; }
   @keyframes aiPulse { 0%,100%{box-shadow:0 4px 20px rgba(233,69,96,0.4)} 50%{box-shadow:0 4px 30px rgba(155,93,229,0.6)} }
 
   /* AI Panel */
@@ -332,7 +345,12 @@
 </div>
 
 <!-- AI FAB -->
+<!-- AI FAB -->
 <button class="ai-fab" onclick="openAI()">🤖</button>
+
+<!-- 背景上傳按鈕 -->
+<button class="bg-fab" onclick="document.getElementById('bgUploadInput').click()" title="更換背景">📷</button>
+<input type="file" id="bgUploadInput" accept="image/*" style="display:none" onchange="handleBgUpload(event)">
 
 <!-- AI Panel -->
 <div class="ai-panel" id="aiPanel">
@@ -949,7 +967,31 @@ async function sendAI() {
 document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
 document.getElementById('aiInput').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();}});
 
-// ═══ INIT ═══
+// ═══ 背景上傳 ═══
+function handleBgUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const url = e.target.result;
+    localStorage.setItem('cal_bg_image', url);
+    applyBgImage(url);
+  };
+  reader.readAsDataURL(file);
+}
+function applyBgImage(url) {
+  const bg = document.getElementById('bgLayer');
+  if (url) {
+    bg.style.backgroundImage = `url(${url})`;
+    bg.style.opacity = '0.35';
+  } else {
+    bg.style.backgroundImage = '';
+    bg.style.opacity = '0.18';
+  }
+}
+// 載入時恢復上次的背景
+const savedBg = localStorage.getItem('cal_bg_image');
+if (savedBg) applyBgImage(savedBg);
 if(selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
 if(selectedDate.getDay()===6) selectedDate.setDate(selectedDate.getDate()+2);
 render();
