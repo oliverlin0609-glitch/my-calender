@@ -150,20 +150,12 @@
   .sports-refresh-btn { background: rgba(155,93,229,0.18); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(155,93,229,0.38); color: #9b5de5; width: 28px; height: 28px; border-radius: 8px; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; margin-left: auto; }
   .sports-refresh-btn:active { transform: rotate(360deg); }
 
-  /* AI FAB */
-  .meal-fab {
-    position: fixed; bottom: 210px; right: 20px;
-    width: 46px; height: 46px; border-radius: 50%;
-    background: rgba(78,204,163,0.2);
-    backdrop-filter: blur(18px) saturate(1.6);
-    -webkit-backdrop-filter: blur(18px) saturate(1.6);
-    border: 1px solid rgba(78,204,163,0.4);
-    box-shadow: 0 4px 20px rgba(78,204,163,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
-    color: white; font-size: 20px; cursor: pointer;
-    z-index: 60; display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
-  }
-  .meal-fab:active { transform: scale(0.9); } width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; font-size: 22px; cursor: pointer; z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.3s; animation: aiPulse 3s ease infinite; }
+  /* 右側按鈕群 */
+  .side-fab { width: 46px; height: 46px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; border: none; }
+  .side-fab:active { transform: scale(0.9); }
+  .ai-fab { background: linear-gradient(135deg, #e94560, #9b5de5); color: white; box-shadow: 0 4px 20px rgba(233,69,96,0.4); animation: aiPulse 3s ease infinite; }
+  .green-fab { background: rgba(78,204,163,0.2); backdrop-filter: blur(18px) saturate(1.6); -webkit-backdrop-filter: blur(18px) saturate(1.6); border: 1px solid rgba(78,204,163,0.4) !important; box-shadow: 0 4px 20px rgba(78,204,163,0.2), inset 0 1px 0 rgba(255,255,255,0.2); color: white; }
+  .glass-fab { background: rgba(255,255,255,0.12); backdrop-filter: blur(18px) saturate(1.6); -webkit-backdrop-filter: blur(18px) saturate(1.6); border: 1px solid rgba(255,255,255,0.25) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2); color: white; }
   @keyframes aiPulse { 0%,100%{box-shadow:0 4px 20px rgba(233,69,96,0.4)} 50%{box-shadow:0 4px 30px rgba(155,93,229,0.6)} }
 
   /* AI Panel */
@@ -347,10 +339,17 @@
   <div class="nav-item"><div class="nav-icon">⚙️</div>設定</div>
 </div>
 
-<!-- AI FAB -->
-<!-- 拍照按鈕 -->
-<button class="meal-fab" onclick="document.getElementById('mealCameraInput').click()" title="拍攝餐點">🍽️</button>
-<input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleMealPhoto(event)">
+<!-- 右側按鈕群 -->
+<div style="position:fixed; right:20px; bottom:90px; z-index:60; display:flex; flex-direction:column; gap:10px; align-items:center;">
+  <!-- 餐點拍照 -->
+  <button class="side-fab green-fab" onclick="document.getElementById('mealCameraInput').click()" title="拍攝餐點">🍽️</button>
+  <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleMealPhoto(event)">
+  <!-- 背景上傳 -->
+  <button class="side-fab glass-fab" onclick="document.getElementById('bgUploadInput').click()" title="更換背景">📷</button>
+  <input type="file" id="bgUploadInput" accept="image/*" style="display:none" onchange="handleBgUpload(event)">
+  <!-- AI 助手 -->
+  <button class="side-fab ai-fab" onclick="openAI()" title="AI助手">🤖</button>
+</div>
 
 <!-- AI Panel -->
 <div class="ai-panel" id="aiPanel">
@@ -1018,6 +1017,28 @@ function handleMealPhoto(event) {
   }
   event.target.value = '';
 }
+
+// ═══ 背景上傳 ═══
+function handleBgUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const url = e.target.result;
+    localStorage.setItem('cal_bg_image', url);
+    applyBgImage(url);
+  };
+  reader.readAsDataURL(file);
+}
+function applyBgImage(url) {
+  const bg = document.getElementById('bgLayer');
+  if (url) { bg.style.backgroundImage = `url(${url})`; bg.style.opacity = '0.35'; }
+  else { bg.style.backgroundImage = ''; bg.style.opacity = '0.18'; }
+}
+const savedBg = localStorage.getItem('cal_bg_image');
+if (savedBg) applyBgImage(savedBg);
+
+// ═══ INIT ═══
 if(selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
 if(selectedDate.getDay()===6) selectedDate.setDate(selectedDate.getDate()+2);
 render();
