@@ -629,11 +629,11 @@ function getCountdown(dateStr) {
   const event = new Date(dateStr + 'T00:00:00');
   const diff = Math.round((event - today) / 86400000);
   if (diff < 0) return null;
-  if (diff > 7) return null;
   if (diff === 0) return { label: '🎉 今天！', cls: 'urgent' };
   if (diff === 1) return { label: '⚡ 明天！', cls: 'urgent' };
-  if (diff <= 3) return { label: `還有 ${diff} 天`, cls: 'urgent' };
-  return { label: `還有 ${diff} 天`, cls: 'soon' };
+  if (diff <= 7) return { label: `還有 ${diff} 天`, cls: 'urgent' };
+  if (diff <= 14) return { label: `還有 ${diff} 天`, cls: 'soon' };
+  return null;
 }
 
 // ═══ SCHOOL EVENTS ═══
@@ -774,16 +774,44 @@ function renderDayContent() {
   const slots = isWeekday ? getScheduleForDay(dow, dk) : [];
   let html = '';
 
+  // ── 即將到來的活動倒數 ──
+  const upcomingEvents = schoolEvents.filter(e => {
+    const diff = Math.round((new Date(e.date + 'T00:00:00') - today) / 86400000);
+    return diff >= 0 && diff <= 7;
+  });
+  if (upcomingEvents.length) {
+    html += `<div class="section"><div class="section-label">⏰ 即將到來</div><div class="school-events-card">`;
+    upcomingEvents.forEach(e => {
+      const diff = Math.round((new Date(e.date + 'T00:00:00') - today) / 86400000);
+      const label = diff === 0 ? '🎉 今天！' : diff === 1 ? '⚡ 明天！' : `還有 ${diff} 天`;
+      const cls = diff <= 2 ? 'urgent' : 'soon';
+      const d = new Date(e.date + 'T00:00:00');
+      html += `<div class="school-event-item">
+        <div class="school-event-dot"></div>
+        <div class="school-event-body">
+          <div class="school-event-title">${escHtml(e.title)}</div>
+          <div class="school-event-note">${d.getMonth()+1}月${d.getDate()}日 (週${DAYS_TW[d.getDay()]})${e.time?' · '+e.time:''}</div>
+          <div class="countdown-badge ${cls}">${label}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
   // School Events
   if (dayEvents.length) {
     html += `<div class="section"><div class="section-label">🏫 學校活動</div><div class="school-events-card">`;
     dayEvents.forEach(e => {
-      html += `<div class="school-event-item"><div class="school-event-dot"></div><div class="school-event-body">
-        <div class="school-event-title">${escHtml(e.title)}</div>
-        ${e.note?`<div class="school-event-note">${escHtml(e.note)}</div>`:''}
-        ${e.time?`<div class="school-event-time">⏰ ${e.time}</div>`:''}
-        ${(()=>{ const cd=getCountdown(e.date); return cd?`<div class="countdown-badge ${cd.cls}">${cd.label}</div>`:''; })()}
-      </div></div>`;
+      html += `<div class="school-event-item">
+        <div class="school-event-dot"></div>
+        <div class="school-event-body">
+          <div class="school-event-title">${escHtml(e.title)}</div>
+          ${e.note?`<div class="school-event-note">${escHtml(e.note)}</div>`:''}
+          ${e.time?`<div class="school-event-time">⏰ ${e.time}</div>`:''}
+          ${(()=>{ const cd=getCountdown(e.date); return cd?`<div class="countdown-badge ${cd.cls}">${cd.label}</div>`:''; })()}
+        </div>
+        <button onclick="deleteSchoolEvent(${e.id})" style="background:rgba(233,69,96,0.15);border:1px solid rgba(233,69,96,0.3);color:var(--accent);width:24px;height:24px;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>`;
     });
     html += `</div></div>`;
   }
