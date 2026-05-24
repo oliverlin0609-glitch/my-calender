@@ -10,133 +10,39 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f0f1a;
-    --surface: #1a1a2e;
-    --card: #16213e;
-    --accent: #e94560;
-    --accent2: #0f3460;
-    --gold: #f5a623;
-    --green: #4ecca3;
-    --school: #38b2f5;
-    --text: #eaeaea;
-    --muted: #888aaa;
-    --border: rgba(255,255,255,0.08);
-    --radius: 16px;
+    --bg: #0f0f1a; --surface: #1a1a2e; --card: #16213e;
+    --accent: #e94560; --accent2: #0f3460; --gold: #f5a623;
+    --green: #4ecca3; --school: #38b2f5; --text: #eaeaea;
+    --muted: #888aaa; --border: rgba(255,255,255,0.08); --radius: 16px;
     --glass-bg: rgba(255,255,255,0.10);
     --glass-border: rgba(255,255,255,0.22);
     --glass-shadow: 0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.18);
     --glass-blur: blur(18px) saturate(1.6);
   }
-
-  /* ── LIQUID GLASS base ── */
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background 1.2s ease;
-  }
-
-  #bgLayer {
-    position: fixed; inset: 0; z-index: 0;
-    transition: opacity 1.2s ease;
-    background-size: cover; background-position: center;
-    opacity: 0.18; pointer-events: none;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(233,69,96,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(233,69,96,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none; z-index: 0;
-  }
-
-  .wrapper {
-    position: relative; z-index: 1;
-    max-width: 480px; margin: 0 auto;
-    padding: 0 0 100px;
-  }
+  body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; transition: background 1.2s ease; }
+  #bgLayer { position: fixed; inset: 0; z-index: 0; background-size: cover; background-position: center; opacity: 0.18; pointer-events: none; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(233,69,96,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(233,69,96,0.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .wrapper { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 100px; }
 
   /* Header */
   .header { padding: 24px 20px 16px; display: flex; flex-direction: column; gap: 4px; }
   .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .app-title {
-    font-family: 'Space Mono', monospace; font-size: 11px;
-    letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;
-  }
-  .date-display { font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; }
+  .app-title { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .date-display { font-size: 28px; font-weight: 700; line-height: 1.1; }
   .date-sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
-  .mood-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted);
-    padding: 3px 8px; border-radius: 20px;
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-    margin-top: 6px; cursor: pointer; transition: all 0.2s;
-  }
-  .mood-badge:active { opacity: 0.7; }
-  .nav-btn {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    color: var(--text);
-    width: 36px; height: 36px; border-radius: 10px; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-  }
-  .nav-btn:active { transform: scale(0.92); background: rgba(255,255,255,0.18); }
-  .today-btn {
-    background: rgba(233,69,96,0.35);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(233,69,96,0.55);
-    box-shadow: 0 4px 18px rgba(233,69,96,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
-    color: white;
-    padding: 0 14px; height: 36px; border-radius: 10px;
-    font-size: 12px; font-weight: 700; cursor: pointer;
-    font-family: 'Space Mono', monospace; letter-spacing: 1px; transition: all 0.2s;
-  }
-  .today-btn:active { transform: scale(0.92); background: rgba(233,69,96,0.5); }
+  .mood-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); padding: 3px 8px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); margin-top: 6px; }
+  .nav-btn { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); color: var(--text); width: 36px; height: 36px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .nav-btn:active { transform: scale(0.92); }
+  .today-btn { background: rgba(233,69,96,0.35); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(233,69,96,0.55); box-shadow: 0 4px 18px rgba(233,69,96,0.25), inset 0 1px 0 rgba(255,255,255,0.2); color: white; padding: 0 14px; height: 36px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Space Mono', monospace; letter-spacing: 1px; transition: all 0.2s; }
 
   /* Day tabs */
   .day-tabs { display: flex; gap: 6px; padding: 0 20px 16px; overflow-x: auto; scrollbar-width: none; }
   .day-tabs::-webkit-scrollbar { display: none; }
-  .day-tab {
-    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 8px 12px; border-radius: 14px;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    cursor: pointer; transition: all 0.2s; min-width: 52px;
-    position: relative;
-  }
-  .day-tab.active {
-    background: rgba(233,69,96,0.32);
-    border-color: rgba(233,69,96,0.6);
-    box-shadow: 0 4px 20px rgba(233,69,96,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
-  }
+  .day-tab { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; border-radius: 14px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); cursor: pointer; transition: all 0.2s; min-width: 52px; position: relative; }
+  .day-tab.active { background: rgba(233,69,96,0.32); border-color: rgba(233,69,96,0.6); box-shadow: 0 4px 20px rgba(233,69,96,0.3), inset 0 1px 0 rgba(255,255,255,0.25); }
   .day-tab:active { transform: scale(0.93); }
-  .day-tab.has-school-event::after {
-    content: '🏫';
-    position: absolute; top: -6px; right: -4px;
-    font-size: 12px;
-  }
+  .day-tab.has-school-event::after { content: '🏫'; position: absolute; top: -6px; right: -4px; font-size: 12px; }
   .tab-name { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); letter-spacing: 1px; }
   .day-tab.active .tab-name { color: rgba(255,255,255,0.8); }
   .tab-date { font-size: 18px; font-weight: 700; }
@@ -146,101 +52,42 @@
   /* Sections */
   .section { margin: 0 20px 16px; animation: fadeUp 0.35s ease both; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .section-label {
-    font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 2px;
-    color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
-  }
+  .section-label { font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* ── SCHOOL EVENTS ── */
-  .school-events-card {
-    background: linear-gradient(135deg, #0d1e2e 0%, #0a1929 100%);
-    border: 1px solid rgba(56,178,245,0.35);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .school-event-item {
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(56,178,245,0.1);
-    display: flex; gap: 12px; align-items: flex-start;
-  }
+  /* School Events */
+  .school-events-card { background: linear-gradient(135deg, #0d1e2e, #0a1929); border: 1px solid rgba(56,178,245,0.35); border-radius: var(--radius); overflow: hidden; }
+  .school-event-item { padding: 14px 16px; border-bottom: 1px solid rgba(56,178,245,0.1); display: flex; gap: 12px; align-items: flex-start; }
   .school-event-item:last-child { border-bottom: none; }
-  .school-event-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--school); margin-top: 5px; flex-shrink: 0;
-    box-shadow: 0 0 8px rgba(56,178,245,0.6);
-  }
+  .school-event-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--school); margin-top: 5px; flex-shrink: 0; box-shadow: 0 0 8px rgba(56,178,245,0.6); }
   .school-event-body { flex: 1; }
-  .school-event-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .school-event-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
   .school-event-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
-  .school-event-time {
-    font-size: 10px; font-family: 'Space Mono', monospace;
-    color: var(--school); background: rgba(56,178,245,0.1);
-    padding: 2px 8px; border-radius: 20px; margin-top: 4px; display: inline-block;
-  }
-  .school-events-empty {
-    padding: 20px 16px; text-align: center;
-    font-size: 12px; color: var(--muted); font-style: italic;
-  }
+  .school-event-time { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--school); background: rgba(56,178,245,0.1); padding: 2px 8px; border-radius: 20px; margin-top: 4px; display: inline-block; }
 
-  /* Morning routine */
-  .morning-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(78,204,163,0.2); border-radius: var(--radius);
-    padding: 16px; position: relative; overflow: hidden;
-  }
+  /* Morning */
+  .morning-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 1px solid rgba(78,204,163,0.2); border-radius: var(--radius); padding: 16px; position: relative; overflow: hidden; }
   .morning-card::before { content: '☀'; position: absolute; right: 16px; top: 12px; font-size: 32px; opacity: 0.08; }
   .routine-items { display: flex; flex-direction: column; gap: 8px; }
   .routine-item { display: flex; align-items: center; gap: 10px; }
-  .routine-icon {
-    width: 28px; height: 28px; border-radius: 8px;
-    background: rgba(78,204,163,0.12); display: flex; align-items: center; justify-content: center;
-    font-size: 14px; flex-shrink: 0;
-  }
-  .routine-text { font-size: 13px; color: var(--text); }
-  .routine-badge {
-    font-size: 10px; background: rgba(78,204,163,0.15); color: var(--green);
-    padding: 2px 7px; border-radius: 20px; font-family: 'Space Mono', monospace;
-    margin-left: auto; flex-shrink: 0;
-  }
-
-  .breakfast-card {
-    background: linear-gradient(135deg, #1a1420 0%, #1e1628 100%);
-    border: 1px solid rgba(245,166,35,0.25); border-radius: var(--radius);
-    padding: 16px; display: flex; gap: 14px; align-items: center;
-    position: relative; overflow: hidden; margin-top: 10px;
-  }
+  .routine-icon { width: 28px; height: 28px; border-radius: 8px; background: rgba(78,204,163,0.12); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .routine-text { font-size: 13px; }
+  .routine-badge { font-size: 10px; background: rgba(78,204,163,0.15); color: var(--green); padding: 2px 7px; border-radius: 20px; font-family: 'Space Mono', monospace; margin-left: auto; flex-shrink: 0; }
+  .breakfast-card { background: linear-gradient(135deg, #1a1420, #1e1628); border: 1px solid rgba(245,166,35,0.25); border-radius: var(--radius); padding: 16px; display: flex; gap: 14px; align-items: center; margin-top: 10px; }
   .breakfast-emoji { font-size: 36px; flex-shrink: 0; }
   .breakfast-info { flex: 1; }
   .breakfast-label { font-size: 9px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: var(--gold); margin-bottom: 4px; }
   .breakfast-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
   .breakfast-drink { font-size: 12px; color: var(--muted); }
-  .breakfast-tag {
-    font-size: 9px; background: rgba(245,166,35,0.12); color: var(--gold);
-    padding: 3px 8px; border-radius: 20px; font-family: 'Space Mono', monospace;
-    margin-top: 6px; display: inline-block;
-  }
-  .reroll-btn {
-    background: rgba(245,166,35,0.18);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(245,166,35,0.4);
-    box-shadow: 0 2px 12px rgba(245,166,35,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
-    color: var(--gold);
-    width: 34px; height: 34px; border-radius: 10px; font-size: 18px; cursor: pointer;
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-  }
+  .breakfast-tag { font-size: 9px; background: rgba(245,166,35,0.12); color: var(--gold); padding: 3px 8px; border-radius: 20px; font-family: 'Space Mono', monospace; margin-top: 6px; display: inline-block; }
+  .reroll-btn { background: rgba(245,166,35,0.18); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(245,166,35,0.4); box-shadow: 0 2px 12px rgba(245,166,35,0.15), inset 0 1px 0 rgba(255,255,255,0.15); color: var(--gold); width: 34px; height: 34px; border-radius: 10px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .reroll-btn:active { transform: rotate(180deg) scale(0.9); }
 
   /* Schedule */
-  .schedule-block { display: flex; gap: 12px; margin-bottom: 8px; animation: fadeUp 0.3s ease both; }
+  .schedule-block { display: flex; gap: 8px; margin-bottom: 8px; animation: fadeUp 0.3s ease both; align-items: stretch; }
   .time-col { width: 48px; flex-shrink: 0; text-align: right; padding-top: 12px; }
   .time-text { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); line-height: 1.3; }
-  .class-card {
-    flex: 1; background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px 14px; border-left: 3px solid var(--accent2); transition: all 0.2s;
-  }
+  .class-card { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; border-left: 3px solid var(--accent2); transition: all 0.2s; }
   .class-card.break-card { background: rgba(255,255,255,0.03); border-left-color: transparent; padding: 8px 14px; }
   .class-card.special { border-left-color: var(--green); background: linear-gradient(135deg, #16213e, #12293a); }
   .class-card.lunch { border-left-color: var(--gold); background: linear-gradient(135deg, #1e1a10, #221e12); }
@@ -249,133 +96,62 @@
   .class-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
   .class-meta { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
   .break-text { font-size: 11px; color: var(--muted); font-style: italic; }
-  .free-badge {
-    display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
-    color: var(--accent); background: rgba(233,69,96,0.1); padding: 3px 8px;
-    border-radius: 20px; font-family: 'Space Mono', monospace;
-  }
+  .free-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--accent); background: rgba(233,69,96,0.1); padding: 3px 8px; border-radius: 20px; font-family: 'Space Mono', monospace; }
+
+  /* Edit mode */
+  .slot-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; padding-top: 8px; }
+  .slot-edit-btn, .slot-del-btn { border: none; border-radius: 8px; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s; }
+  .slot-edit-btn { background: rgba(78,204,163,0.15); color: var(--green); border: 1px solid rgba(78,204,163,0.3); }
+  .slot-del-btn { background: rgba(233,69,96,0.12); color: var(--accent); border: 1px solid rgba(233,69,96,0.25); }
+  .slot-edit-btn:active, .slot-del-btn:active { transform: scale(0.88); }
+  .add-slot-btn { width: 100%; background: rgba(78,204,163,0.08); border: 1px dashed rgba(78,204,163,0.35); border-radius: 12px; color: var(--green); padding: 11px; font-size: 13px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s; margin-top: 6px; }
+  .add-slot-btn:active { background: rgba(78,204,163,0.15); }
+  .edit-schedule-toggle { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--muted); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-family: 'Space Mono', monospace; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .edit-schedule-toggle.active { background: rgba(78,204,163,0.15); border-color: rgba(78,204,163,0.4); color: var(--green); }
 
   /* Notes */
   .notes-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
   .notes-header { padding: 12px 16px 8px; display: flex; justify-content: space-between; align-items: center; }
   .notes-title { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
   .notes-count { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--muted); }
-  .add-note-btn {
-    background: rgba(233,69,96,0.25);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(233,69,96,0.45);
-    box-shadow: 0 2px 10px rgba(233,69,96,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
-    color: white;
-    width: 28px; height: 28px; border-radius: 8px; font-size: 20px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s; line-height: 1;
-  }
+  .add-note-btn { background: rgba(233,69,96,0.25); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(233,69,96,0.45); color: white; width: 28px; height: 28px; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; line-height: 1; }
   .add-note-btn:active { transform: scale(0.88); }
   .notes-list { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 8px; }
-  .note-item {
-    background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px;
-    display: flex; gap: 10px; align-items: flex-start;
-  }
+  .note-item { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start; }
   .note-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0; }
   .note-text { font-size: 13px; line-height: 1.5; flex: 1; word-break: break-word; }
-  .note-delete { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; transition: color 0.2s; }
-  .note-delete:hover { color: var(--accent); }
+  .note-delete { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; }
   .notes-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 4px 0 8px; }
 
   /* Fact */
-  .fact-card {
-    background: linear-gradient(135deg, #0e1f2e 0%, #122030 100%);
-    border: 1px solid rgba(78,204,163,0.3); border-radius: var(--radius);
-    padding: 16px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.2s;
-  }
+  .fact-card { background: linear-gradient(135deg, #0e1f2e, #122030); border: 1px solid rgba(78,204,163,0.3); border-radius: var(--radius); padding: 16px; position: relative; overflow: hidden; }
   .fact-card::before { content: '💡'; position: absolute; right: 14px; top: 12px; font-size: 28px; opacity: 0.1; }
   .fact-label { font-size: 9px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: var(--green); margin-bottom: 8px; text-transform: uppercase; }
-  .fact-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+  .fact-text { font-size: 13px; line-height: 1.6; }
   .fact-actions { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
-  .fact-link-btn {
-    background: rgba(78,204,163,0.15);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(78,204,163,0.35);
-    box-shadow: 0 2px 10px rgba(78,204,163,0.12), inset 0 1px 0 rgba(255,255,255,0.15);
-    color: var(--green);
-    padding: 6px 12px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace;
-    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
-    transition: all 0.2s; flex: 1; justify-content: center;
-  }
-  .fact-refresh-btn {
-    background: rgba(255,255,255,0.10);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255,255,255,0.20);
-    box-shadow: var(--glass-shadow);
-    color: var(--muted);
-    width: 32px; height: 32px; border-radius: 10px; font-size: 16px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0;
-  }
+  .fact-link-btn { background: rgba(78,204,163,0.15); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(78,204,163,0.35); color: var(--green); padding: 6px 12px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
+  .fact-refresh-btn { background: rgba(255,255,255,0.10); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(255,255,255,0.20); color: var(--muted); width: 32px; height: 32px; border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; }
   .fact-refresh-btn:active { transform: rotate(360deg); }
 
   /* Sports */
-  .sports-card {
-    background: linear-gradient(135deg, #1a0f2e 0%, #1e1235 100%);
-    border: 1px solid rgba(155,93,229,0.3); border-radius: var(--radius);
-    padding: 16px; position: relative; overflow: hidden;
-  }
+  .sports-card { background: linear-gradient(135deg, #1a0f2e, #1e1235); border: 1px solid rgba(155,93,229,0.3); border-radius: var(--radius); padding: 16px; }
   .sports-label { font-size: 9px; font-family: 'Space Mono', monospace; letter-spacing: 2px; color: #9b5de5; margin-bottom: 10px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
   .sports-type-pills { display: flex; gap: 6px; margin-bottom: 12px; }
-  .sports-pill {
-    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace;
-    cursor: pointer;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-    color: var(--muted); transition: all 0.2s;
-  }
-  .sports-pill.active {
-    background: rgba(155,93,229,0.28);
-    border-color: rgba(155,93,229,0.55);
-    box-shadow: 0 2px 12px rgba(155,93,229,0.2), inset 0 1px 0 rgba(255,255,255,0.18);
-    color: #9b5de5;
-  }
-  .sports-item {
-    background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 14px;
-    margin-bottom: 8px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block;
-  }
-  .sports-item:active { transform: scale(0.98); background: rgba(155,93,229,0.1); }
+  .sports-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: 'Space Mono', monospace; cursor: pointer; background: rgba(255,255,255,0.08); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(255,255,255,0.15); color: var(--muted); transition: all 0.2s; }
+  .sports-pill.active { background: rgba(155,93,229,0.28); border-color: rgba(155,93,229,0.55); color: #9b5de5; }
+  .sports-item { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; text-decoration: none; display: block; }
+  .sports-item:active { background: rgba(155,93,229,0.1); }
   .sports-headline { font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--text); }
   .sports-meta { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 4px; }
-  .sports-refresh-btn {
-    background: rgba(155,93,229,0.18);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(155,93,229,0.38);
-    box-shadow: 0 2px 10px rgba(155,93,229,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
-    color: #9b5de5;
-    width: 28px; height: 28px; border-radius: 8px; font-size: 15px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.3s; margin-left: auto;
-  }
+  .sports-refresh-btn { background: rgba(155,93,229,0.18); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(155,93,229,0.38); color: #9b5de5; width: 28px; height: 28px; border-radius: 8px; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; margin-left: auto; }
   .sports-refresh-btn:active { transform: rotate(360deg); }
 
   /* AI FAB */
-  .ai-fab {
-    position: fixed; bottom: 90px; right: 20px; width: 52px; height: 52px;
-    border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5);
-    border: none; color: white; font-size: 22px; cursor: pointer;
-    z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4);
-    display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-    animation: aiPulse 3s ease infinite;
-  }
+  .ai-fab { position: fixed; bottom: 90px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; font-size: 22px; cursor: pointer; z-index: 60; box-shadow: 0 4px 20px rgba(233,69,96,0.4); display: flex; align-items: center; justify-content: center; transition: all 0.3s; animation: aiPulse 3s ease infinite; }
   @keyframes aiPulse { 0%,100%{box-shadow:0 4px 20px rgba(233,69,96,0.4)} 50%{box-shadow:0 4px 30px rgba(155,93,229,0.6)} }
-  .ai-fab:active { transform: scale(0.9); }
 
   /* AI Panel */
-  .ai-panel {
-    position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column;
-    background: rgba(10,10,20,0.97); backdrop-filter: blur(20px);
-    transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
-  }
+  .ai-panel { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; background: rgba(10,10,20,0.97); backdrop-filter: blur(20px); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1); }
   .ai-panel.open { transform: translateY(0); }
   .ai-header { padding: 20px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
   .ai-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #9b5de5); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -398,64 +174,44 @@
   @keyframes typingDot { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
   .ai-suggestions { display: flex; gap: 6px; padding: 8px 20px; overflow-x: auto; scrollbar-width: none; }
   .ai-suggestions::-webkit-scrollbar { display: none; }
-  .ai-suggest-chip {
-    flex-shrink: 0;
-    background: rgba(255,255,255,0.10);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255,255,255,0.20);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
-    border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; color: var(--text);
-  }
-  .ai-suggest-chip:active { background: rgba(233,69,96,0.22); border-color: rgba(233,69,96,0.45); }
+  .ai-suggest-chip { flex-shrink: 0; background: rgba(255,255,255,0.10); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid rgba(255,255,255,0.20); border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; color: var(--text); }
   .ai-input-bar { padding: 12px 20px 32px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-end; }
-  .ai-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; resize: none; min-height: 42px; max-height: 120px; outline: none; transition: border-color 0.2s; }
+  .ai-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; resize: none; min-height: 42px; max-height: 120px; outline: none; }
   .ai-input:focus { border-color: var(--accent); }
-  .ai-send { background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; width: 42px; height: 42px; border-radius: 12px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-  .ai-send:active { transform: scale(0.9); }
+  .ai-send { background: linear-gradient(135deg, #e94560, #9b5de5); border: none; color: white; width: 42px; height: 42px; border-radius: 12px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
-  /* Note Modal */
+  /* Modals */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal-box { background: var(--surface); border-radius: 24px 24px 0 0; padding: 20px 20px 40px; width: 100%; border-top: 1px solid var(--border); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
   .modal-overlay.open .modal-box { transform: translateY(0); }
   .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 16px; }
   .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
-  .note-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; resize: none; min-height: 100px; outline: none; transition: border-color 0.2s; }
+  .note-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; resize: none; min-height: 100px; outline: none; }
   .note-input:focus { border-color: var(--accent); }
   .modal-actions { display: flex; gap: 10px; margin-top: 12px; }
-  .modal-cancel {
-    flex: 1;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-    color: var(--muted); padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
-  }
-  .modal-save {
-    flex: 2;
-    background: rgba(233,69,96,0.35);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(233,69,96,0.55);
-    box-shadow: 0 4px 18px rgba(233,69,96,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
-    color: white; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s;
-  }
-  .modal-save:active { transform: scale(0.97); }
+  .modal-cancel { flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: var(--muted); padding: 12px; border-radius: 12px; font-size: 14px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
+  .modal-save { flex: 2; background: rgba(233,69,96,0.35); border: 1px solid rgba(233,69,96,0.55); color: white; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
 
-  /* ── PARENT ADMIN PANEL ── */
-  .admin-panel {
-    position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column;
-    background: #0a0a16; transform: translateX(100%);
-    transition: transform 0.4s cubic-bezier(0.34,1.1,0.64,1);
-  }
+  /* Slot edit modal */
+  .slot-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); z-index: 400; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .slot-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .slot-modal-box { background: #1a1a2e; border-radius: 24px 24px 0 0; padding: 20px 20px 48px; width: 100%; border-top: 1px solid var(--border); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .slot-modal-overlay.open .slot-modal-box { transform: translateY(0); }
+  .slot-field { margin-bottom: 14px; }
+  .slot-field label { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 6px; }
+  .slot-field input, .slot-field select { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; outline: none; -webkit-appearance: none; }
+  .slot-field input:focus, .slot-field select:focus { border-color: var(--green); }
+  .slot-field select option { background: #1a1a2e; }
+  .apply-scope-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .apply-scope-btn { flex: 1; padding: 9px; border-radius: 10px; font-size: 12px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--muted); transition: all 0.2s; text-align: center; }
+  .apply-scope-btn.selected { background: rgba(78,204,163,0.2); border-color: rgba(78,204,163,0.5); color: var(--green); font-weight: 700; }
+  .slot-save-btn { width: 100%; background: rgba(78,204,163,0.25); border: 1px solid rgba(78,204,163,0.5); color: var(--green); padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
+
+  /* Admin Panel */
+  .admin-panel { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; background: #0a0a16; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.34,1.1,0.64,1); }
   .admin-panel.open { transform: translateX(0); }
-  .admin-header {
-    padding: 20px 20px 16px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-    background: linear-gradient(135deg, rgba(56,178,245,0.08), transparent);
-  }
+  .admin-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, rgba(56,178,245,0.08), transparent); }
   .admin-icon { font-size: 28px; }
   .admin-title-block { flex: 1; }
   .admin-title { font-size: 16px; font-weight: 700; color: var(--school); }
@@ -466,103 +222,34 @@
   .admin-add-form { background: var(--surface); border: 1px solid rgba(56,178,245,0.25); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; }
   .form-row { margin-bottom: 12px; }
   .form-label { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; display: block; }
-  .form-input, .form-textarea, .form-select {
-    width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px;
-    font-family: 'Noto Sans TC', sans-serif; outline: none; transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--school); }
+  .form-input, .form-textarea { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: 'Noto Sans TC', sans-serif; outline: none; -webkit-appearance: none; }
+  .form-input:focus, .form-textarea:focus { border-color: var(--school); }
   .form-textarea { resize: none; min-height: 70px; }
-  .form-select { cursor: pointer; }
   .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .admin-add-btn {
-    width: 100%; background: linear-gradient(135deg, #38b2f5, #1a7bc4);
-    border: none; color: white; padding: 14px; border-radius: 12px;
-    font-size: 14px; font-weight: 700; cursor: pointer;
-    font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s; margin-top: 4px;
-  }
-  .admin-add-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .admin-add-btn { width: 100%; background: linear-gradient(135deg, #38b2f5, #1a7bc4); border: none; color: white; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; margin-top: 4px; }
   .admin-events-list { display: flex; flex-direction: column; gap: 10px; }
-  .admin-event-item {
-    background: var(--surface); border: 1px solid rgba(56,178,245,0.2);
-    border-radius: 12px; padding: 14px 16px;
-    display: flex; gap: 12px; align-items: flex-start;
-  }
+  .admin-event-item { background: var(--surface); border: 1px solid rgba(56,178,245,0.2); border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
   .admin-event-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--school); margin-top: 5px; flex-shrink: 0; }
   .admin-event-body { flex: 1; min-width: 0; }
   .admin-event-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
   .admin-event-date { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--school); }
   .admin-event-note { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
-  .admin-event-delete {
-    background: rgba(233,69,96,0.1); border: 1px solid rgba(233,69,96,0.25);
-    color: var(--accent); width: 28px; height: 28px; border-radius: 8px;
-    font-size: 14px; cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-  }
-  .admin-event-delete:active { transform: scale(0.88); }
+  .admin-event-delete { background: rgba(233,69,96,0.1); border: 1px solid rgba(233,69,96,0.25); color: var(--accent); width: 28px; height: 28px; border-radius: 8px; font-size: 14px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .admin-empty { text-align: center; padding: 32px 20px; color: var(--muted); font-size: 13px; }
-  .sync-status {
-    font-size: 11px; font-family: 'Space Mono', monospace; color: var(--green);
-    text-align: center; padding: 8px; opacity: 0; transition: opacity 0.4s;
-  }
+  .sync-status { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--green); text-align: center; padding: 8px; opacity: 0; transition: opacity 0.4s; }
   .sync-status.show { opacity: 1; }
 
-  /* Lock screen */
-  .lock-screen {
-    position: absolute; inset: 0; background: #0a0a16;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 20px; padding: 40px; z-index: 10;
-  }
-  .lock-icon { font-size: 48px; margin-bottom: 8px; }
-  .lock-title { font-size: 18px; font-weight: 700; color: var(--school); }
-  .lock-sub { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
-  .lock-input {
-    width: 100%; max-width: 280px; background: rgba(255,255,255,0.06);
-    border: 2px solid rgba(56,178,245,0.3); border-radius: 14px;
-    padding: 14px 20px; color: var(--text); font-size: 18px;
-    font-family: 'Space Mono', monospace; outline: none; text-align: center;
-    letter-spacing: 4px; transition: border-color 0.2s;
-  }
-  .lock-input:focus { border-color: var(--school); }
-  .lock-btn {
-    background: linear-gradient(135deg, #38b2f5, #1a7bc4);
-    border: none; color: white; padding: 14px 40px;
-    border-radius: 14px; font-size: 15px; font-weight: 700;
-    cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all 0.2s;
-  }
-  .lock-btn:active { transform: scale(0.97); }
-  .lock-error { font-size: 13px; color: var(--accent); font-family: 'Space Mono', monospace; }
-  .lock-hint { font-size: 11px; color: rgba(255,255,255,0.2); }
-
   /* Bottom nav */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: rgba(15,15,26,0.55);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
-    border-top: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.3);
-    display: flex; justify-content: space-around;
-    padding: 10px 0 20px; z-index: 50;
-  }
-  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 16px; border-radius: 12px; transition: all 0.2s; color: var(--muted); font-size: 10px; font-family: 'Space Mono', monospace; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15,15,26,0.55); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8); border-top: 1px solid rgba(255,255,255,0.12); box-shadow: 0 -4px 24px rgba(0,0,0,0.3); display: flex; justify-content: space-around; padding: 10px 0 20px; z-index: 50; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 16px; border-radius: 12px; color: var(--muted); font-size: 10px; font-family: 'Space Mono', monospace; }
   .nav-item.active { color: var(--accent); }
   .nav-item .nav-icon { font-size: 22px; }
   .nav-item.school-nav .nav-icon { position: relative; display: inline-block; }
-  .school-badge {
-    position: absolute; top: -4px; right: -6px;
-    background: var(--school); color: white; border-radius: 50%;
-    width: 16px; height: 16px; font-size: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Mono', monospace; font-weight: 700;
-  }
+  .school-badge { position: absolute; top: -4px; right: -6px; background: var(--school); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Space Mono', monospace; font-weight: 700; }
 </style>
 </head>
 <body>
-
 <div id="bgLayer"></div>
-
 <div class="wrapper">
   <div class="header">
     <div class="app-title">MY DAILY PLANNER</div>
@@ -579,7 +266,6 @@
       </div>
     </div>
   </div>
-
   <div class="day-tabs" id="dayTabs"></div>
   <div id="dayContent"></div>
 </div>
@@ -597,9 +283,47 @@
   </div>
 </div>
 
+<!-- Slot Edit Modal -->
+<div class="slot-modal-overlay" id="slotModalOverlay">
+  <div class="slot-modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="slotModalTitle">✏️ 編輯課程</div>
+    <div class="slot-field">
+      <label>時間</label>
+      <input type="time" id="slotTimeInput">
+    </div>
+    <div class="slot-field">
+      <label>課程名稱</label>
+      <input type="text" id="slotNameInput" placeholder="例：國語、數學、體育...">
+    </div>
+    <div class="slot-field">
+      <label>類型</label>
+      <select id="slotTypeInput">
+        <option value="class">一般課程</option>
+        <option value="special">特別活動 ⭐</option>
+        <option value="lunch">午餐時間 🍱</option>
+        <option value="pbl">專題課程 🚀</option>
+        <option value="free">空堂 ✨</option>
+        <option value="break">休息時間</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:1px;display:block;margin-bottom:8px;">套用範圍</label>
+      <div class="apply-scope-row">
+        <div class="apply-scope-btn selected" id="applyTodayBtn" onclick="selectApply('today')">只改今天</div>
+        <div class="apply-scope-btn" id="applyWeekBtn" onclick="selectApply('week')">每週都改</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeSlotModal()">取消</button>
+      <button class="slot-save-btn" onclick="saveSlot()">✓ 儲存</button>
+    </div>
+  </div>
+</div>
+
 <!-- Bottom Nav -->
 <div class="bottom-nav">
-  <div class="nav-item active" onclick=""><div class="nav-icon">📅</div>行事曆</div>
+  <div class="nav-item active"><div class="nav-icon">📅</div>行事曆</div>
   <div class="nav-item school-nav" onclick="openAdminPanel()">
     <div class="nav-icon" style="position:relative;">🏫<span class="school-badge" id="schoolBadge" style="display:none">0</span></div>
     學校活動
@@ -608,7 +332,7 @@
 </div>
 
 <!-- AI FAB -->
-<button class="ai-fab" onclick="openAI()" title="AI助手">🤖</button>
+<button class="ai-fab" onclick="openAI()">🤖</button>
 
 <!-- AI Panel -->
 <div class="ai-panel" id="aiPanel">
@@ -621,11 +345,10 @@
     <button class="ai-close" onclick="closeAI()">✕</button>
   </div>
   <div class="ai-messages" id="aiMessages"></div>
-  <div class="ai-suggestions" id="aiSuggestions">
+  <div class="ai-suggestions">
     <div class="ai-suggest-chip" onclick="sendSuggestion('幫我看今天課表')">📚 查看課表</div>
     <div class="ai-suggest-chip" onclick="sendSuggestion('換一個早餐推薦')">🍱 換早餐</div>
     <div class="ai-suggest-chip" onclick="sendSuggestion('說一個有趣的冷知識')">💡 說個知識</div>
-    <div class="ai-suggest-chip" onclick="sendSuggestion('今天天氣適合什麼活動？')">☀️ 今日建議</div>
   </div>
   <div class="ai-input-bar">
     <textarea class="ai-input" id="aiInput" placeholder="問我任何事..." rows="1"></textarea>
@@ -633,74 +356,47 @@
   </div>
 </div>
 
-<!-- Parent Admin Panel -->
+<!-- Admin Panel (no password — son can use) -->
 <div class="admin-panel" id="adminPanel">
-  <!-- Lock Screen -->
-  <div class="lock-screen" id="lockScreen">
-    <div class="lock-icon">🔐</div>
-    <div class="lock-title">家長專區</div>
-    <div class="lock-sub">請輸入家長密碼<br>才能新增或編輯學校活動</div>
-    <input type="password" class="lock-input" id="lockInput" placeholder="密碼" maxlength="10">
-    <div class="lock-error" id="lockError" style="display:none">密碼錯誤，請再試一次</div>
-    <button class="lock-btn" onclick="checkPassword()">進入</button>
-    <div class="lock-hint">預設密碼：1234（可在下方修改）</div>
-    <button onclick="closeAdminPanel()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;margin-top:8px;">← 返回</button>
+  <div class="admin-header">
+    <div class="admin-icon">🏫</div>
+    <div class="admin-title-block">
+      <div class="admin-title">學校活動管理</div>
+      <div class="admin-subtitle">新增後立即出現在行事曆</div>
+    </div>
+    <button class="admin-close" onclick="closeAdminPanel()">✕</button>
   </div>
-
-  <!-- Admin Content -->
-  <div id="adminContent" style="display:none;flex:1;flex-direction:column;height:100%;">
-    <div class="admin-header">
-      <div class="admin-icon">🏫</div>
-      <div class="admin-title-block">
-        <div class="admin-title">學校活動管理</div>
-        <div class="admin-subtitle">家長專區 · 新增後孩子立即看到</div>
+  <div class="admin-body">
+    <div class="admin-section-title">新增學校活動</div>
+    <div class="admin-add-form">
+      <div class="form-row">
+        <label class="form-label">活動名稱 *</label>
+        <input type="text" class="form-input" id="eventTitle" placeholder="例：科展發表、運動會、親師座談...">
       </div>
-      <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+      <div class="form-row form-row-2">
+        <div>
+          <label class="form-label">日期 *</label>
+          <input type="date" class="form-input" id="eventDate">
+        </div>
+        <div>
+          <label class="form-label">時間（選填）</label>
+          <input type="time" class="form-input" id="eventTime">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">備註（選填）</label>
+        <textarea class="form-textarea" id="eventNote" placeholder="例：請攜帶作品、穿制服..."></textarea>
+      </div>
+      <div class="sync-status" id="syncStatus">✓ 已儲存！行事曆已更新</div>
+      <button class="admin-add-btn" onclick="addSchoolEvent()">＋ 新增活動</button>
     </div>
-
-    <div class="admin-body">
-      <div class="admin-section-title">新增學校活動</div>
-      <div class="admin-add-form">
-        <div class="form-row">
-          <label class="form-label">活動名稱 *</label>
-          <input type="text" class="form-input" id="eventTitle" placeholder="例：科展發表、運動會、親師座談...">
-        </div>
-        <div class="form-row form-row-2">
-          <div>
-            <label class="form-label">日期 *</label>
-            <input type="date" class="form-input" id="eventDate">
-          </div>
-          <div>
-            <label class="form-label">時間（選填）</label>
-            <input type="time" class="form-input" id="eventTime">
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label">備註（選填）</label>
-          <textarea class="form-textarea" id="eventNote" placeholder="例：請攜帶作品、穿制服、下午1點集合..."></textarea>
-        </div>
-        <div class="sync-status" id="syncStatus">✓ 已儲存！孩子的行事曆已更新</div>
-        <button class="admin-add-btn" onclick="addSchoolEvent()">＋ 新增活動</button>
-      </div>
-
-      <div class="admin-section-title">已排定的學校活動</div>
-      <div class="admin-events-list" id="adminEventsList"></div>
-
-      <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border);">
-        <div class="admin-section-title">更改密碼</div>
-        <div style="display:flex;gap:10px;">
-          <input type="password" class="form-input" id="newPwInput" placeholder="新密碼" style="flex:1">
-          <button onclick="changePassword()" style="background:rgba(56,178,245,0.15);border:1px solid rgba(56,178,245,0.3);color:var(--school);padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer;white-space:nowrap;font-family:'Noto Sans TC',sans-serif;">更改</button>
-        </div>
-      </div>
-    </div>
+    <div class="admin-section-title">已排定的學校活動</div>
+    <div class="admin-events-list" id="adminEventsList"></div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════════════
+// ═══ DATA ═══
 const BREAKFASTS = [
   { emoji: '🥚', name: '茶葉蛋 + 御飯糰（鮭魚）', drink: '無糖豆漿', tag: '高蛋白' },
   { emoji: '🍙', name: '雞肉沙拉飯糰', drink: '鮮奶（低脂）', tag: '低卡均衡' },
@@ -716,7 +412,7 @@ const BREAKFASTS = [
   { emoji: '🧇', name: '鬆餅 + 起司片', drink: '蘋果汁', tag: '美味開心' },
 ];
 
-const SCHEDULE = {
+const DEFAULT_SCHEDULE = {
   0: [
     { time: '08:30', name: '晨光靜心閱讀', type: 'special' },
     { time: '09:00', name: '國語', type: 'class' },
@@ -769,7 +465,6 @@ const SCHEDULE = {
 
 const DAYS_TW = ['日','一','二','三','四','五','六'];
 const DAYS_EN = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-
 const DAY_MOODS = {
   0: { label: '🌞 週一，充電出發！', gradient: 'linear-gradient(135deg,#1a3a2a,#0d1f1a)' },
   1: { label: '🔥 週二，全力衝！', gradient: 'linear-gradient(135deg,#2a1a1a,#1f0d0d)' },
@@ -779,7 +474,6 @@ const DAY_MOODS = {
   5: { label: '🌈 週六，享受自由', gradient: 'linear-gradient(135deg,#1a2a1a,#0d1f0d)' },
   6: { label: '😴 週日，充電中...', gradient: 'linear-gradient(135deg,#1a1a2e,#111128)' },
 };
-
 const FALLBACK_FACTS = [
   { text: '章魚有三個心臟，兩個負責把血液送到鰓，一個負責全身循環。', keyword: '章魚' },
   { text: '蜂鳥是世界上唯一能夠向後飛行的鳥類，翅膀每秒可以拍打80次！', keyword: '蜂鳥' },
@@ -792,7 +486,6 @@ const FALLBACK_FACTS = [
   { text: '彩虹其實是完整的圓形，我們通常只能看到一半是因為地面擋住了。', keyword: '彩虹圓形' },
   { text: '火烈鳥是粉紅色的原因是牠們吃的藻類和蝦子裡含有的色素。', keyword: '火烈鳥粉紅' },
 ];
-
 const SPORTS_NEWS = {
   soccer: [
     { title: '梅西帶領邁阿密國際踢出驚人逆轉勝，全場助攻兩球', source: 'ESPN', url: 'https://www.espn.com/soccer/' },
@@ -814,9 +507,7 @@ const SPORTS_NEWS = {
   ],
 };
 
-// ═══════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════
+// ═══ STATE ═══
 let today = new Date(); today.setHours(0,0,0,0);
 let selectedDate = new Date(today);
 let weekOffset = 0;
@@ -827,165 +518,167 @@ let currentSportsType = 'soccer';
 let sportsCache = {};
 let dailyFactIdx = null;
 let aiHistory = [];
-let adminUnlocked = false;
+let scheduleEditing = false;
 
-// ═══════════════════════════════════════════════════════
-// SCHOOL EVENTS (stored in localStorage — shared by saving the file)
-// ═══════════════════════════════════════════════════════
-function saveSchoolEvents() {
-  localStorage.setItem('cal_school_events', JSON.stringify(schoolEvents));
-  updateSchoolBadge();
+// Custom schedules
+// weekSchedule[wi] overrides DEFAULT_SCHEDULE[wi] for that weekday (wi: 0=Mon..4=Fri)
+// daySchedule[dk] overrides for a specific date only
+let weekSchedule = JSON.parse(localStorage.getItem('cal_week_schedule') || '{}');
+let daySchedule  = JSON.parse(localStorage.getItem('cal_day_schedule')  || '{}');
+function saveSchedules() {
+  localStorage.setItem('cal_week_schedule', JSON.stringify(weekSchedule));
+  localStorage.setItem('cal_day_schedule',  JSON.stringify(daySchedule));
+}
+function getScheduleForDay(dayOfWeek, dk) {
+  if (daySchedule[dk]) return JSON.parse(JSON.stringify(daySchedule[dk]));
+  const wi = dayOfWeek - 1;
+  if (weekSchedule[wi]) return JSON.parse(JSON.stringify(weekSchedule[wi]));
+  if (DEFAULT_SCHEDULE[wi]) return JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[wi]));
+  return [];
 }
 
-function getEventsForDate(dateStr) {
-  return schoolEvents.filter(e => e.date === dateStr);
-}
+// ═══ SLOT EDIT MODAL ═══
+let editingSlotDk  = null;
+let editingSlotIdx = null;
+let applyScope = 'today';
 
-function updateSchoolBadge() {
-  const upcoming = schoolEvents.filter(e => e.date >= dateKey(today));
-  const badge = document.getElementById('schoolBadge');
-  if (upcoming.length > 0) {
-    badge.style.display = 'flex';
-    badge.textContent = upcoming.length;
+function openSlotModal(dk, slotIdx) {
+  editingSlotDk  = dk;
+  editingSlotIdx = slotIdx;
+  applyScope = 'today';
+  selectApply('today');
+  const dow   = new Date(dk + 'T00:00:00').getDay();
+  const slots = getScheduleForDay(dow, dk);
+  if (slotIdx !== null && slotIdx < slots.length) {
+    const s = slots[slotIdx];
+    document.getElementById('slotModalTitle').textContent = '✏️ 編輯課程';
+    document.getElementById('slotTimeInput').value = s.time;
+    document.getElementById('slotNameInput').value = s.name;
+    document.getElementById('slotTypeInput').value = s.type;
   } else {
-    badge.style.display = 'none';
+    document.getElementById('slotModalTitle').textContent = '➕ 新增課程';
+    document.getElementById('slotTimeInput').value = '';
+    document.getElementById('slotNameInput').value = '';
+    document.getElementById('slotTypeInput').value = 'class';
   }
+  document.getElementById('slotModalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('slotNameInput').focus(), 350);
+}
+function closeSlotModal() {
+  document.getElementById('slotModalOverlay').classList.remove('open');
+  editingSlotDk = null; editingSlotIdx = null;
+}
+function selectApply(scope) {
+  applyScope = scope;
+  document.getElementById('applyTodayBtn').classList.toggle('selected', scope === 'today');
+  document.getElementById('applyWeekBtn').classList.toggle('selected', scope === 'week');
+}
+function saveSlot() {
+  const time = document.getElementById('slotTimeInput').value;
+  const name = document.getElementById('slotNameInput').value.trim();
+  const type = document.getElementById('slotTypeInput').value;
+  if (!name) {
+    document.getElementById('slotNameInput').style.borderColor = 'var(--accent)';
+    setTimeout(() => document.getElementById('slotNameInput').style.borderColor = '', 1500);
+    return;
+  }
+  const dk  = editingSlotDk;
+  const dow = new Date(dk + 'T00:00:00').getDay();
+  const wi  = dow - 1;
+  const newSlot = { time: time || '08:00', name, type };
+
+  if (applyScope === 'today') {
+    let slots = getScheduleForDay(dow, dk);
+    if (editingSlotIdx !== null) slots[editingSlotIdx] = newSlot;
+    else slots.push(newSlot);
+    slots.sort((a, b) => a.time.localeCompare(b.time));
+    daySchedule[dk] = slots;
+  } else {
+    let base = weekSchedule[wi] ? JSON.parse(JSON.stringify(weekSchedule[wi]))
+             : (DEFAULT_SCHEDULE[wi] ? JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[wi])) : []);
+    if (editingSlotIdx !== null) {
+      const cur = getScheduleForDay(dow, dk);
+      const old = cur[editingSlotIdx];
+      const mi  = base.findIndex(s => s.time === old.time && s.name === old.name);
+      if (mi >= 0) base[mi] = newSlot; else base.push(newSlot);
+    } else {
+      base.push(newSlot);
+    }
+    base.sort((a, b) => a.time.localeCompare(b.time));
+    weekSchedule[wi] = base;
+    delete daySchedule[dk];
+  }
+  saveSchedules();
+  closeSlotModal();
+  render();
+}
+function deleteSlot(dk, slotIdx) {
+  const dow   = new Date(dk + 'T00:00:00').getDay();
+  const slots = getScheduleForDay(dow, dk);
+  slots.splice(slotIdx, 1);
+  daySchedule[dk] = slots;
+  saveSchedules();
+  render();
 }
 
+// ═══ SCHOOL EVENTS ═══
+function saveSchoolEvents() { localStorage.setItem('cal_school_events', JSON.stringify(schoolEvents)); updateSchoolBadge(); }
+function getEventsForDate(ds) { return schoolEvents.filter(e => e.date === ds); }
+function updateSchoolBadge() {
+  const up = schoolEvents.filter(e => e.date >= dateKey(today));
+  const b  = document.getElementById('schoolBadge');
+  if (up.length > 0) { b.style.display = 'flex'; b.textContent = up.length; } else { b.style.display = 'none'; }
+}
 function addSchoolEvent() {
   const title = document.getElementById('eventTitle').value.trim();
-  const date = document.getElementById('eventDate').value;
-  const time = document.getElementById('eventTime').value;
-  const note = document.getElementById('eventNote').value.trim();
-
+  const date  = document.getElementById('eventDate').value;
+  const time  = document.getElementById('eventTime').value;
+  const note  = document.getElementById('eventNote').value.trim();
   if (!title || !date) {
     document.getElementById('eventTitle').style.borderColor = 'var(--accent)';
     setTimeout(() => document.getElementById('eventTitle').style.borderColor = '', 1500);
     return;
   }
-
-  const event = { id: Date.now(), title, date, time, note };
-  schoolEvents.push(event);
+  schoolEvents.push({ id: Date.now(), title, date, time, note });
   schoolEvents.sort((a, b) => a.date.localeCompare(b.date));
   saveSchoolEvents();
-
-  // Clear form
-  document.getElementById('eventTitle').value = '';
-  document.getElementById('eventDate').value = '';
-  document.getElementById('eventTime').value = '';
-  document.getElementById('eventNote').value = '';
-
-  const status = document.getElementById('syncStatus');
-  status.classList.add('show');
-  setTimeout(() => status.classList.remove('show'), 3000);
-
-  renderAdminEvents();
-  render(); // refresh calendar
+  ['eventTitle','eventDate','eventTime','eventNote'].forEach(id => document.getElementById(id).value = '');
+  const st = document.getElementById('syncStatus');
+  st.classList.add('show'); setTimeout(() => st.classList.remove('show'), 3000);
+  renderAdminEvents(); render();
 }
-
-function deleteSchoolEvent(id) {
-  schoolEvents = schoolEvents.filter(e => e.id !== id);
-  saveSchoolEvents();
-  renderAdminEvents();
-  render();
-}
-
+function deleteSchoolEvent(id) { schoolEvents = schoolEvents.filter(e => e.id !== id); saveSchoolEvents(); renderAdminEvents(); render(); }
 function renderAdminEvents() {
   const list = document.getElementById('adminEventsList');
-  if (schoolEvents.length === 0) {
-    list.innerHTML = '<div class="admin-empty">還沒有學校活動<br>在上方新增第一個吧！</div>';
-    return;
-  }
+  if (!schoolEvents.length) { list.innerHTML = '<div class="admin-empty">還沒有學校活動<br>在上方新增第一個吧！</div>'; return; }
   list.innerHTML = schoolEvents.map(e => {
     const d = new Date(e.date + 'T00:00:00');
-    const dateStr = `${d.getMonth()+1}月${d.getDate()}日 (週${DAYS_TW[d.getDay()]})`;
-    return `
-    <div class="admin-event-item">
+    return `<div class="admin-event-item">
       <div class="admin-event-dot"></div>
       <div class="admin-event-body">
         <div class="admin-event-title">${escHtml(e.title)}</div>
-        <div class="admin-event-date">${dateStr}${e.time ? ' · ' + e.time : ''}</div>
+        <div class="admin-event-date">${d.getMonth()+1}月${d.getDate()}日 (週${DAYS_TW[d.getDay()]})${e.time?' · '+e.time:''}</div>
         ${e.note ? `<div class="admin-event-note">${escHtml(e.note)}</div>` : ''}
       </div>
       <button class="admin-event-delete" onclick="deleteSchoolEvent(${e.id})">✕</button>
     </div>`;
   }).join('');
 }
-
-// ═══════════════════════════════════════════════════════
-// ADMIN PANEL
-// ═══════════════════════════════════════════════════════
-const ADMIN_PW_KEY = 'cal_admin_pw';
-
-function getAdminPassword() {
-  return localStorage.getItem(ADMIN_PW_KEY) || '1234';
-}
-
 function openAdminPanel() {
   document.getElementById('adminPanel').classList.add('open');
-  if (adminUnlocked) showAdminContent();
-  else showLockScreen();
-}
-
-function closeAdminPanel() {
-  document.getElementById('adminPanel').classList.remove('open');
-}
-
-function showLockScreen() {
-  document.getElementById('lockScreen').style.display = 'flex';
-  document.getElementById('adminContent').style.display = 'none';
-  document.getElementById('lockInput').value = '';
-  document.getElementById('lockError').style.display = 'none';
-}
-
-function showAdminContent() {
-  document.getElementById('lockScreen').style.display = 'none';
-  document.getElementById('adminContent').style.display = 'flex';
-  // Set today as default date
-  const today_str = dateKey(today);
-  if (!document.getElementById('eventDate').value) {
-    document.getElementById('eventDate').value = today_str;
-  }
+  document.getElementById('eventDate').value = dateKey(today);
   renderAdminEvents();
 }
+function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('open'); }
 
-function checkPassword() {
-  const input = document.getElementById('lockInput').value;
-  if (input === getAdminPassword()) {
-    adminUnlocked = true;
-    document.getElementById('lockError').style.display = 'none';
-    showAdminContent();
-  } else {
-    document.getElementById('lockError').style.display = 'block';
-    document.getElementById('lockInput').value = '';
-    document.getElementById('lockInput').focus();
-  }
+// ═══ BACKGROUND ═══
+function applyBackground(dow) {
+  const m = DAY_MOODS[dow];
+  document.body.style.background = m.gradient;
+  document.getElementById('moodText').textContent = m.label;
 }
 
-function changePassword() {
-  const newPw = document.getElementById('newPwInput').value.trim();
-  if (!newPw) return;
-  localStorage.setItem(ADMIN_PW_KEY, newPw);
-  document.getElementById('newPwInput').value = '';
-  alert('密碼已更改！');
-}
-
-document.getElementById('lockInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkPassword();
-});
-
-// ═══════════════════════════════════════════════════════
-// BACKGROUND
-// ═══════════════════════════════════════════════════════
-function applyBackground(dayOfWeek) {
-  const mood = DAY_MOODS[dayOfWeek];
-  document.body.style.background = mood.gradient;
-  document.getElementById('moodText').textContent = mood.label;
-}
-
-// ═══════════════════════════════════════════════════════
-// BREAKFAST
-// ═══════════════════════════════════════════════════════
+// ═══ BREAKFAST ═══
 function getBreakfast(dk, forceRandom = false) {
   if (!forceRandom && breakfastCache[dk] !== undefined) return breakfastCache[dk];
   let seed = dk.split('-').reduce((a, b) => a * 31 + parseInt(b), 0);
@@ -997,20 +690,11 @@ function getBreakfast(dk, forceRandom = false) {
 }
 function rerollBreakfast(dk) { getBreakfast(dk, true); renderDayContent(); }
 
-// ═══════════════════════════════════════════════════════
-// FACTS
-// ═══════════════════════════════════════════════════════
+// ═══ FACTS ═══
 function getDailyFactIdx(dk) {
-  // 每次開啟 app 都重新抽（存當天的「開啟時間戳」，不同天就換新的）
   const sessionKey = 'cal_fact_session';
   const session = JSON.parse(localStorage.getItem(sessionKey) || '{}');
-
-  // 如果今天已經抽過而且還沒換天，直接用
-  if (session.date === dk && session.idx !== undefined && dailyFactIdx !== null) {
-    return dailyFactIdx;
-  }
-
-  // 每次開啟 app（dailyFactIdx 是 null）就重新隨機抽一個
+  if (session.date === dk && dailyFactIdx !== null) return dailyFactIdx;
   if (dailyFactIdx === null) {
     dailyFactIdx = Math.floor(Math.random() * FALLBACK_FACTS.length);
     localStorage.setItem(sessionKey, JSON.stringify({ date: dk, idx: dailyFactIdx }));
@@ -1023,160 +707,124 @@ function refreshFact(dk) {
   renderDayContent();
 }
 
-// ═══════════════════════════════════════════════════════
-// SPORTS
-// ═══════════════════════════════════════════════════════
+// ═══ SPORTS ═══
 function getSportsNews(type, dk) {
   const key = `${type}_${dk}`;
   if (sportsCache[key]) return sportsCache[key];
-  const pool = SPORTS_NEWS[type];
-  const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
-  sportsCache[key] = shuffled;
-  return shuffled;
+  const s = [...SPORTS_NEWS[type]].sort(() => Math.random() - 0.5).slice(0, 3);
+  sportsCache[key] = s; return s;
 }
-function refreshSports(dk) { const key = `${currentSportsType}_${dk}`; delete sportsCache[key]; renderDayContent(); }
-function switchSportsType(type) { currentSportsType = type; renderDayContent(); }
+function refreshSports(dk) { delete sportsCache[`${currentSportsType}_${dk}`]; renderDayContent(); }
+function switchSportsType(t) { currentSportsType = t; renderDayContent(); }
 
-// ═══════════════════════════════════════════════════════
-// DATE UTILS
-// ═══════════════════════════════════════════════════════
-function dateKey(d) {
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function getMondayOfWeek(d) {
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  const monday = new Date(d); monday.setDate(d.getDate() + diff); monday.setHours(0,0,0,0);
-  return monday;
-}
-function getWeekDates(weekMon) {
-  return Array.from({length: 7}, (_, i) => { const d = new Date(weekMon); d.setDate(weekMon.getDate() + i); return d; });
-}
-function getWeekNum(d) {
-  const jan1 = new Date(d.getFullYear(), 0, 1);
-  return Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
-}
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
+// ═══ DATE UTILS ═══
+function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function getMondayOfWeek(d) { const day=d.getDay(); const diff=day===0?-6:1-day; const m=new Date(d); m.setDate(d.getDate()+diff); m.setHours(0,0,0,0); return m; }
+function getWeekDates(mon) { return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; }); }
+function getWeekNum(d) { const j=new Date(d.getFullYear(),0,1); return Math.ceil(((d-j)/86400000+j.getDay()+1)/7); }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 
-// ═══════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════
+// ═══ RENDER ═══
 function render() {
-  const baseMon = getMondayOfWeek(today);
-  baseMon.setDate(baseMon.getDate() + weekOffset * 7);
-  const weekDates = getWeekDates(baseMon);
+  const bm = getMondayOfWeek(today);
+  bm.setDate(bm.getDate() + weekOffset * 7);
+  const wd = getWeekDates(bm);
   const dk = dateKey(selectedDate);
-
-  document.getElementById('mainDate').textContent =
-    `${selectedDate.getMonth()+1}月${selectedDate.getDate()}日 (${DAYS_TW[selectedDate.getDay()]})`;
-  document.getElementById('mainDateSub').textContent =
-    selectedDate.getFullYear() + ' · 第' + getWeekNum(selectedDate) + '週';
-
+  document.getElementById('mainDate').textContent = `${selectedDate.getMonth()+1}月${selectedDate.getDate()}日 (${DAYS_TW[selectedDate.getDay()]})`;
+  document.getElementById('mainDateSub').textContent = selectedDate.getFullYear() + ' · 第' + getWeekNum(selectedDate) + '週';
   applyBackground(selectedDate.getDay());
-
   const tabs = document.getElementById('dayTabs');
   tabs.innerHTML = '';
-  weekDates.slice(1, 6).forEach(d => {
-    const k = dateKey(d);
-    const isActive = k === dk;
-    const hasNote = notes[k] && notes[k].length > 0;
-    const isToday = k === dateKey(today);
-    const dayEvents = getEventsForDate(k);
+  wd.slice(1, 6).forEach(d => {
+    const k = dateKey(d), isActive = k === dk, hasNote = notes[k]?.length > 0;
+    const isToday = k === dateKey(today), dayEvents = getEventsForDate(k);
     const tab = document.createElement('div');
-    tab.className = 'day-tab' + (isActive ? ' active' : '') + (dayEvents.length > 0 ? ' has-school-event' : '');
-    tab.innerHTML = `
-      <div class="tab-name">${DAYS_EN[d.getDay()]}</div>
-      <div class="tab-date" style="${isToday && !isActive ? 'color:var(--accent)' : ''}">${d.getDate()}</div>
-      <div class="tab-dot${hasNote ? ' has-note' : ''}"></div>
-    `;
+    tab.className = 'day-tab' + (isActive ? ' active' : '') + (dayEvents.length ? ' has-school-event' : '');
+    tab.innerHTML = `<div class="tab-name">${DAYS_EN[d.getDay()]}</div><div class="tab-date" style="${isToday&&!isActive?'color:var(--accent)':''}">${d.getDate()}</div><div class="tab-dot${hasNote?' has-note':''}"></div>`;
     tab.onclick = () => { selectedDate = new Date(d); render(); };
     tabs.appendChild(tab);
   });
-
   renderDayContent();
   updateSchoolBadge();
 }
 
 function renderDayContent() {
-  const dk = dateKey(selectedDate);
-  const dayOfWeek = selectedDate.getDay();
-  const content = document.getElementById('dayContent');
-  const scheduleIdx = dayOfWeek >= 1 && dayOfWeek <= 5 ? dayOfWeek - 1 : null;
-  const bf = BREAKFASTS[getBreakfast(dk)];
-  const dayNotes = notes[dk] || [];
+  const dk  = dateKey(selectedDate);
+  const dow = selectedDate.getDay();
+  const isWeekday = dow >= 1 && dow <= 5;
+  const bf  = BREAKFASTS[getBreakfast(dk)];
+  const dayNotes  = notes[dk] || [];
   const fact = FALLBACK_FACTS[getDailyFactIdx(dk)];
-  const sportsItems = getSportsNews(currentSportsType, dk);
   const dayEvents = getEventsForDate(dk);
-
+  const slots = isWeekday ? getScheduleForDay(dow, dk) : [];
   let html = '';
 
-  // ── School Events (if any for this day) ──
-  if (dayEvents.length > 0) {
-    html += `<div class="section">
-      <div class="section-label">🏫 學校活動</div>
-      <div class="school-events-card">`;
+  // School Events
+  if (dayEvents.length) {
+    html += `<div class="section"><div class="section-label">🏫 學校活動</div><div class="school-events-card">`;
     dayEvents.forEach(e => {
-      html += `<div class="school-event-item">
-        <div class="school-event-dot"></div>
-        <div class="school-event-body">
-          <div class="school-event-title">${escHtml(e.title)}</div>
-          ${e.note ? `<div class="school-event-note">${escHtml(e.note)}</div>` : ''}
-          ${e.time ? `<div class="school-event-time">⏰ ${e.time}</div>` : ''}
-        </div>
-      </div>`;
+      html += `<div class="school-event-item"><div class="school-event-dot"></div><div class="school-event-body">
+        <div class="school-event-title">${escHtml(e.title)}</div>
+        ${e.note?`<div class="school-event-note">${escHtml(e.note)}</div>`:''}
+        ${e.time?`<div class="school-event-time">⏰ ${e.time}</div>`:''}
+      </div></div>`;
     });
     html += `</div></div>`;
   }
 
-  // ── Morning Routine ──
-  html += `
-  <div class="section">
-    <div class="section-label">晨間例行公事</div>
-    <div class="morning-card">
-      <div class="routine-items">
-        <div class="routine-item"><div class="routine-icon">🌅</div><div class="routine-text">起床、換衣服</div><div class="routine-badge">起床</div></div>
-        <div class="routine-item"><div class="routine-icon">💪</div><div class="routine-text">伏地挺身 5 下</div><div class="routine-badge">×5</div></div>
-        <div class="routine-item"><div class="routine-icon">🦵</div><div class="routine-text">仰臥起坐 5 下</div><div class="routine-badge">×5</div></div>
-        <div class="routine-item"><div class="routine-icon">🤸</div><div class="routine-text">開合跳 100 下</div><div class="routine-badge">×100</div></div>
-        <div class="routine-item"><div class="routine-icon">🏪</div><div class="routine-text">去全家買早餐</div><div class="routine-badge">早餐</div></div>
-      </div>
-      <div class="breakfast-card">
-        <div class="breakfast-emoji">${bf.emoji}</div>
-        <div class="breakfast-info">
-          <div class="breakfast-label">TODAY'S BREAKFAST</div>
-          <div class="breakfast-name">${bf.name}</div>
-          <div class="breakfast-drink">🥛 ${bf.drink}</div>
-          <div class="breakfast-tag">${bf.tag}</div>
-        </div>
-        <button class="reroll-btn" onclick="rerollBreakfast('${dk}')">🔀</button>
-      </div>
+  // Morning + Breakfast
+  html += `<div class="section"><div class="section-label">晨間例行公事</div><div class="morning-card"><div class="routine-items">
+    <div class="routine-item"><div class="routine-icon">🌅</div><div class="routine-text">起床、換衣服</div><div class="routine-badge">起床</div></div>
+    <div class="routine-item"><div class="routine-icon">💪</div><div class="routine-text">伏地挺身 5 下</div><div class="routine-badge">×5</div></div>
+    <div class="routine-item"><div class="routine-icon">🦵</div><div class="routine-text">仰臥起坐 5 下</div><div class="routine-badge">×5</div></div>
+    <div class="routine-item"><div class="routine-icon">🤸</div><div class="routine-text">開合跳 100 下</div><div class="routine-badge">×100</div></div>
+    <div class="routine-item"><div class="routine-icon">🏪</div><div class="routine-text">去全家買早餐</div><div class="routine-badge">早餐</div></div>
+  </div>
+  <div class="breakfast-card">
+    <div class="breakfast-emoji">${bf.emoji}</div>
+    <div class="breakfast-info">
+      <div class="breakfast-label">TODAY'S BREAKFAST</div>
+      <div class="breakfast-name">${bf.name}</div>
+      <div class="breakfast-drink">🥛 ${bf.drink}</div>
+      <div class="breakfast-tag">${bf.tag}</div>
     </div>
-  </div>`;
+    <button class="reroll-btn" onclick="rerollBreakfast('${dk}')">🔀</button>
+  </div></div></div>`;
 
-  // ── Schedule ──
-  if (scheduleIdx !== null) {
-    html += `<div class="section"><div class="section-label">今日課表</div>`;
-    SCHEDULE[scheduleIdx].forEach((slot, i) => {
-      let cardClass = 'class-card';
-      let icon = '';
-      if (slot.type === 'break') cardClass += ' break-card';
-      if (slot.type === 'special') { cardClass += ' special'; icon = '⭐ '; }
-      if (slot.type === 'lunch') { cardClass += ' lunch'; icon = '🍱 '; }
-      if (slot.type === 'pbl') { cardClass += ' pbl-card'; icon = '🚀 '; }
-      if (slot.type === 'free') cardClass += ' free';
-      const slots = SCHEDULE[scheduleIdx];
-      const endTime = i + 1 < slots.length ? slots[i+1].time : '17:00';
-
-      if (slot.type === 'break') {
-        html += `<div class="schedule-block"><div class="time-col"><div class="time-text">${slot.time}</div></div><div class="${cardClass}"><div class="break-text">— ${slot.name} —</div></div></div>`;
-      } else if (slot.type === 'free') {
-        html += `<div class="schedule-block"><div class="time-col"><div class="time-text">${slot.time}<br>${endTime}</div></div><div class="${cardClass}"><div class="class-name"><span class="free-badge">✨ 空堂</span></div><div class="class-meta" style="margin-top:4px">自由時間，做你想做的事！</div></div></div>`;
+  // Schedule
+  if (isWeekday) {
+    html += `<div class="section">
+      <div class="section-label">今日課表
+        <button class="edit-schedule-toggle ${scheduleEditing?'active':''}" onclick="toggleEditSchedule()">
+          ${scheduleEditing ? '✓ 完成' : '✏️ 編輯'}
+        </button>
+      </div>`;
+    slots.forEach((slot, i) => {
+      let cc = 'class-card', icon = '';
+      if (slot.type==='break') cc += ' break-card';
+      if (slot.type==='special') { cc += ' special'; icon = '⭐ '; }
+      if (slot.type==='lunch')   { cc += ' lunch';   icon = '🍱 '; }
+      if (slot.type==='pbl')     { cc += ' pbl-card'; icon = '🚀 '; }
+      if (slot.type==='free')    cc += ' free';
+      const endTime = i+1 < slots.length ? slots[i+1].time : '17:00';
+      let card = '';
+      if (slot.type==='break') {
+        card = `<div class="${cc}"><div class="break-text">— ${escHtml(slot.name)} —</div></div>`;
+      } else if (slot.type==='free') {
+        card = `<div class="${cc}"><div class="class-name"><span class="free-badge">✨ 空堂</span></div><div class="class-meta" style="margin-top:4px">自由時間，做你想做的事！</div></div>`;
       } else {
-        html += `<div class="schedule-block"><div class="time-col"><div class="time-text">${slot.time}<br>${endTime}</div></div><div class="${cardClass}"><div class="class-name">${icon}${slot.name}</div><div class="class-meta">${slot.time} – ${endTime}</div></div></div>`;
+        card = `<div class="${cc}"><div class="class-name">${icon}${escHtml(slot.name)}</div><div class="class-meta">${slot.time} – ${endTime}</div></div>`;
       }
+      html += `<div class="schedule-block">
+        <div class="time-col"><div class="time-text">${slot.time}${slot.type!=='break'?'<br>'+endTime:''}</div></div>
+        ${card}
+        ${scheduleEditing ? `<div class="slot-actions">
+          <button class="slot-edit-btn" onclick="openSlotModal('${dk}',${i})">✏️</button>
+          <button class="slot-del-btn" onclick="deleteSlot('${dk}',${i})">🗑</button>
+        </div>` : ''}
+      </div>`;
     });
+    if (scheduleEditing) html += `<button class="add-slot-btn" onclick="openSlotModal('${dk}',null)">＋ 新增課程</button>`;
     html += `</div>`;
   } else {
     html += `<div class="section"><div class="section-label">今日</div>
@@ -1187,7 +835,7 @@ function renderDayContent() {
       </div></div>`;
   }
 
-  // ── Fact ──
+  // Fact
   html += `<div class="section"><div class="section-label">今日冷知識</div>
     <div class="fact-card">
       <div class="fact-label">💡 DID YOU KNOW?</div>
@@ -1198,7 +846,8 @@ function renderDayContent() {
       </div>
     </div></div>`;
 
-  // ── Sports ──
+  // Sports
+  const si = getSportsNews(currentSportsType, dk);
   html += `<div class="section"><div class="section-label">體育新聞</div>
     <div class="sports-card">
       <div class="sports-label" style="justify-content:space-between;"><span>🏆 TODAY IN SPORTS</span><button class="sports-refresh-btn" onclick="refreshSports('${dk}')">🔀</button></div>
@@ -1207,12 +856,10 @@ function renderDayContent() {
         <div class="sports-pill ${currentSportsType==='basketball'?'active':''}" onclick="switchSportsType('basketball')">🏀 籃球</div>
         <div class="sports-pill ${currentSportsType==='baseball'?'active':''}" onclick="switchSportsType('baseball')">⚾ 棒球</div>
       </div>`;
-  sportsItems.forEach(item => {
-    html += `<a href="${item.url}" target="_blank" class="sports-item"><div class="sports-headline">${item.title}</div><div class="sports-meta">${item.source} · 點擊查看更多 ↗</div></a>`;
-  });
+  si.forEach(item => { html += `<a href="${item.url}" target="_blank" class="sports-item"><div class="sports-headline">${item.title}</div><div class="sports-meta">${item.source} · 點擊查看更多 ↗</div></a>`; });
   html += `</div></div>`;
 
-  // ── Notes ──
+  // Notes
   html += `<div class="section"><div class="section-label">筆記</div>
     <div class="notes-card">
       <div class="notes-header">
@@ -1223,154 +870,88 @@ function renderDayContent() {
         </div>
       </div>
       <div class="notes-list">`;
-  if (dayNotes.length === 0) {
-    html += `<div class="notes-empty">還沒有筆記，點 + 新增一則吧</div>`;
-  } else {
-    dayNotes.forEach((note, idx) => {
-      html += `<div class="note-item"><div class="note-dot"></div><div class="note-text">${escHtml(note)}</div><button class="note-delete" onclick="deleteNote('${dk}',${idx})">×</button></div>`;
-    });
-  }
+  if (!dayNotes.length) { html += `<div class="notes-empty">還沒有筆記，點 + 新增一則吧</div>`; }
+  else { dayNotes.forEach((n, i) => { html += `<div class="note-item"><div class="note-dot"></div><div class="note-text">${escHtml(n)}</div><button class="note-delete" onclick="deleteNote('${dk}',${i})">×</button></div>`; }); }
   html += `</div></div></div>`;
 
-  content.innerHTML = html;
+  document.getElementById('dayContent').innerHTML = html;
 }
 
-// ═══════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════
+function toggleEditSchedule() { scheduleEditing = !scheduleEditing; renderDayContent(); }
+
+// ═══ NAVIGATION ═══
 function changeWeek(dir) {
   weekOffset += dir;
-  const baseMon = getMondayOfWeek(today);
-  baseMon.setDate(baseMon.getDate() + weekOffset * 7);
-  selectedDate = new Date(baseMon);
-  if (selectedDate.getDay() === 0) selectedDate.setDate(selectedDate.getDate() + 1);
+  const bm = getMondayOfWeek(today); bm.setDate(bm.getDate() + weekOffset*7);
+  selectedDate = new Date(bm);
+  if (selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
   render();
 }
 function goToday() {
   weekOffset = 0; selectedDate = new Date(today);
-  if (selectedDate.getDay() === 0) selectedDate.setDate(selectedDate.getDate() + 1);
-  if (selectedDate.getDay() === 6) selectedDate.setDate(selectedDate.getDate() + 2);
+  if (selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
+  if (selectedDate.getDay()===6) selectedDate.setDate(selectedDate.getDate()+2);
   render();
 }
 
-// ═══════════════════════════════════════════════════════
-// NOTES
-// ═══════════════════════════════════════════════════════
+// ═══ NOTES ═══
 let currentNoteDay = null;
-function openModal(dk) {
-  currentNoteDay = dk;
-  document.getElementById('noteInput').value = '';
-  document.getElementById('modalOverlay').classList.add('open');
-  setTimeout(() => document.getElementById('noteInput').focus(), 350);
-}
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); currentNoteDay = null; }
+function openModal(dk) { currentNoteDay=dk; document.getElementById('noteInput').value=''; document.getElementById('modalOverlay').classList.add('open'); setTimeout(()=>document.getElementById('noteInput').focus(),350); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); currentNoteDay=null; }
 function saveNote() {
-  const val = document.getElementById('noteInput').value.trim();
-  if (!val) return;
-  if (!notes[currentNoteDay]) notes[currentNoteDay] = [];
-  notes[currentNoteDay].push(val);
+  const v = document.getElementById('noteInput').value.trim(); if(!v) return;
+  if(!notes[currentNoteDay]) notes[currentNoteDay]=[];
+  notes[currentNoteDay].push(v);
   localStorage.setItem('cal_notes', JSON.stringify(notes));
   closeModal(); render();
 }
-function deleteNote(dk, idx) {
-  notes[dk].splice(idx, 1);
-  localStorage.setItem('cal_notes', JSON.stringify(notes));
-  render();
-}
-document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-document.getElementById('noteInput').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveNote(); } });
+function deleteNote(dk,i) { notes[dk].splice(i,1); localStorage.setItem('cal_notes',JSON.stringify(notes)); render(); }
+document.getElementById('modalOverlay').addEventListener('click', function(e){if(e.target===this)closeModal();});
+document.getElementById('noteInput').addEventListener('keydown', function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();saveNote();}});
+document.getElementById('slotModalOverlay').addEventListener('click', function(e){if(e.target===this)closeSlotModal();});
 
-// ═══════════════════════════════════════════════════════
-// AI ASSISTANT
-// ═══════════════════════════════════════════════════════
-function openAI() {
-  document.getElementById('aiPanel').classList.add('open');
-  if (aiHistory.length === 0) addAIMessage('bot', '你好！我是你的 AI 小助手 🤖\n\n我可以幫你：\n• 📚 查看今日課表\n• 🍱 換早餐推薦\n• 💡 說有趣知識\n• 💬 回答任何問題\n\n有什麼需要嗎？');
-}
+// ═══ AI ═══
+function openAI() { document.getElementById('aiPanel').classList.add('open'); if(!aiHistory.length) addAIMessage('bot','你好！我是你的 AI 小助手 🤖\n\n我可以幫你：\n• 📚 查看今日課表\n• 🍱 換早餐推薦\n• 💡 說有趣知識\n\n有什麼需要嗎？'); }
 function closeAI() { document.getElementById('aiPanel').classList.remove('open'); }
 function addAIMessage(role, text) {
-  const container = document.getElementById('aiMessages');
-  const div = document.createElement('div');
-  div.className = `ai-msg ${role}`;
-  div.innerHTML = `<div class="ai-msg-icon">${role === 'bot' ? '🤖' : '😊'}</div><div class="ai-msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-  if (role === 'user') aiHistory.push({ role: 'user', content: text });
-  else aiHistory.push({ role: 'assistant', content: text });
+  const c=document.getElementById('aiMessages'), d=document.createElement('div');
+  d.className=`ai-msg ${role}`;
+  d.innerHTML=`<div class="ai-msg-icon">${role==='bot'?'🤖':'😊'}</div><div class="ai-msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+  aiHistory.push({role:role==='bot'?'assistant':'user',content:text});
 }
-function showTyping() {
-  const container = document.getElementById('aiMessages');
-  const div = document.createElement('div');
-  div.className = 'ai-msg bot'; div.id = 'aiTyping';
-  div.innerHTML = `<div class="ai-msg-icon">🤖</div><div class="ai-typing"><span></span><span></span><span></span></div>`;
-  container.appendChild(div); container.scrollTop = container.scrollHeight;
-}
-function removeTyping() { const el = document.getElementById('aiTyping'); if (el) el.remove(); }
-function sendSuggestion(text) { document.getElementById('aiInput').value = text; sendAI(); }
-
+function showTyping(){const c=document.getElementById('aiMessages'),d=document.createElement('div');d.className='ai-msg bot';d.id='aiTyping';d.innerHTML=`<div class="ai-msg-icon">🤖</div><div class="ai-typing"><span></span><span></span><span></span></div>`;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function removeTyping(){const e=document.getElementById('aiTyping');if(e)e.remove();}
+function sendSuggestion(t){document.getElementById('aiInput').value=t;sendAI();}
 async function sendAI() {
-  const input = document.getElementById('aiInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = ''; input.style.height = 'auto';
-  addAIMessage('user', text);
-  showTyping();
-
-  const lower = text.toLowerCase();
-  const dk = dateKey(selectedDate);
-  const dow = selectedDate.getDay();
-
-  await new Promise(r => setTimeout(r, 400 + Math.random() * 300));
+  const inp=document.getElementById('aiInput'), text=inp.value.trim(); if(!text)return;
+  inp.value=''; inp.style.height='auto';
+  addAIMessage('user',text); showTyping();
+  const lower=text.toLowerCase(), dk=dateKey(selectedDate), dow=selectedDate.getDay();
+  await new Promise(r=>setTimeout(r,400+Math.random()*300));
   removeTyping();
-
-  if (lower.includes('課表') || lower.includes('今天課')) {
-    const si = dow >= 1 && dow <= 5 ? dow - 1 : null;
-    if (si === null) { addAIMessage('bot', '今天是週末，沒有課喔！好好玩吧 🎉'); return; }
-    const slots = SCHEDULE[si].filter(s => s.type !== 'break');
-    let reply = `📚 今天（週${DAYS_TW[dow]}）的課表：\n\n`;
-    slots.forEach(s => { const icon = s.type==='special'?'⭐':s.type==='lunch'?'🍱':s.type==='pbl'?'🚀':s.type==='free'?'✨':'📖'; reply += `${icon} ${s.time} ${s.name}\n`; });
-    addAIMessage('bot', reply); return;
+  if(lower.includes('課表')||lower.includes('今天課')){
+    const wi=dow>=1&&dow<=5?dow-1:null;
+    if(wi===null){addAIMessage('bot','今天是週末，沒有課喔！好好玩吧 🎉');return;}
+    const sl=getScheduleForDay(dow,dk).filter(s=>s.type!=='break');
+    let r=`📚 今天（週${DAYS_TW[dow]}）的課表：\n\n`;
+    sl.forEach(s=>{const ic=s.type==='special'?'⭐':s.type==='lunch'?'🍱':s.type==='pbl'?'🚀':s.type==='free'?'✨':'📖';r+=`${ic} ${s.time} ${s.name}\n`;});
+    addAIMessage('bot',r);return;
   }
-  if (lower.includes('換早餐') || lower.includes('換一個早餐')) {
-    rerollBreakfast(dk);
-    const bf = BREAKFASTS[getBreakfast(dk)];
-    addAIMessage('bot', `好的！已幫你換成：\n\n${bf.emoji} ${bf.name}\n🥛 ${bf.drink}\n標籤：${bf.tag}`); return;
-  }
-  if (lower.includes('知識') || lower.includes('冷知識')) {
-    const f = FALLBACK_FACTS[Math.floor(Math.random() * FALLBACK_FACTS.length)];
-    addAIMessage('bot', `💡 有趣知識：\n\n${f.text}`); return;
-  }
-  if (lower.includes('學校') || lower.includes('活動') || lower.includes('發表') || lower.includes('運動會')) {
-    const events = schoolEvents.filter(e => e.date >= dateKey(today)).slice(0, 5);
-    if (events.length === 0) { addAIMessage('bot', '目前還沒有即將到來的學校活動喔！\n\n爸媽可以從「學校活動」分頁新增。'); return; }
-    let reply = '📅 即將到來的學校活動：\n\n';
-    events.forEach(e => { const d = new Date(e.date+'T00:00:00'); reply += `🏫 ${d.getMonth()+1}/${d.getDate()} ${e.title}${e.time?' ('+e.time+')':''}\n`; });
-    addAIMessage('bot', reply); return;
-  }
-  const msgs = ['加油|我好累|不想|難過','笑話|好笑'];
-  const encouragements = ['你已經很棒了！每一天都在進步 🌟','休息一下也是充電的一部分 ⚡','相信自己！你一定可以的 💪','今天辛苦了，明天會更好 🌈'];
-  const jokes = ['為什麼數學書很難過？因為裡面有太多問題了！😂','為什麼鉛筆是最勇敢的文具？因為它總是第一個上場！✏️','為什麼魚不會用電腦？因為怕被網住了！🐟'];
-  if (/加油|我好累|不想|難過/.test(lower)) { addAIMessage('bot', encouragements[Math.floor(Math.random()*encouragements.length)]); return; }
-  if (/笑話|好笑/.test(lower)) { addAIMessage('bot', jokes[Math.floor(Math.random()*jokes.length)]); return; }
-
-  const encodedMsg = encodeURIComponent(`（我在用每日行事曆App）${text}`);
-  addAIMessage('bot', '這個問題很好！讓我帶你去 Claude 完整回答：');
-  setTimeout(() => {
-    const container = document.getElementById('aiMessages');
-    const div = document.createElement('div');
-    div.className = 'ai-msg bot';
-    div.innerHTML = `<div class="ai-msg-icon">🤖</div><a href="https://claude.ai/new?q=${encodedMsg}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e94560,#9b5de5);color:white;text-decoration:none;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;font-family:'Space Mono',monospace;">🌐 用 Claude 繼續問 →</a>`;
-    container.appendChild(div); container.scrollTop = container.scrollHeight;
-  }, 300);
+  if(lower.includes('換早餐')){rerollBreakfast(dk);const b=BREAKFASTS[getBreakfast(dk)];addAIMessage('bot',`好的！已幫你換成：\n\n${b.emoji} ${b.name}\n🥛 ${b.drink}`);return;}
+  if(lower.includes('知識')||lower.includes('冷知識')){const f=FALLBACK_FACTS[Math.floor(Math.random()*FALLBACK_FACTS.length)];addAIMessage('bot',`💡 有趣知識：\n\n${f.text}`);return;}
+  if(/加油|我好累|不想|難過/.test(lower)){const e=['你已經很棒了！🌟','相信自己！💪','今天辛苦了 🌈'];addAIMessage('bot',e[Math.floor(Math.random()*e.length)]);return;}
+  if(/笑話|好笑/.test(lower)){const j=['為什麼數學書很難過？因為裡面有太多問題了！😂','為什麼魚不會用電腦？因為怕被網住了！🐟'];addAIMessage('bot',j[Math.floor(Math.random()*j.length)]);return;}
+  const em=encodeURIComponent(`（我在用每日行事曆App）${text}`);
+  addAIMessage('bot','讓我帶你去 Claude 完整回答：');
+  setTimeout(()=>{const c=document.getElementById('aiMessages'),d=document.createElement('div');d.className='ai-msg bot';d.innerHTML=`<div class="ai-msg-icon">🤖</div><a href="https://claude.ai/new?q=${em}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e94560,#9b5de5);color:white;text-decoration:none;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;font-family:'Space Mono',monospace;">🌐 用 Claude 繼續問 →</a>`;c.appendChild(d);c.scrollTop=c.scrollHeight;},300);
 }
-document.getElementById('aiInput').addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight,120)+'px'; });
-document.getElementById('aiInput').addEventListener('keydown', function(e) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();} });
+document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
+document.getElementById('aiInput').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();}});
 
-// ═══════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════
-if (selectedDate.getDay() === 0) selectedDate.setDate(selectedDate.getDate() + 1);
-if (selectedDate.getDay() === 6) selectedDate.setDate(selectedDate.getDate() + 2);
+// ═══ INIT ═══
+if(selectedDate.getDay()===0) selectedDate.setDate(selectedDate.getDate()+1);
+if(selectedDate.getDay()===6) selectedDate.setDate(selectedDate.getDate()+2);
 render();
 </script>
 </body>
